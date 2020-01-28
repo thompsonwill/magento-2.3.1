@@ -4,8 +4,6 @@
  *
  * Format: array(<class_name>[, <replacement>])
  *
- * @codingStandardsIgnoreFile
- *
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
@@ -39,11 +37,7 @@ return [
     ['Mage_Admin_Model_Resource_Rules_Collection', 'Magento\Authorization\Model\ResourceModel\Rules\Collection'],
     [
         'Mage_Admin_Model_Resource_Permissions_Collection',
-        'Magento\Authorization\Model\ResourceModel\Rules\Collection'
-    ],
-    [
         'Magento\Authorization\Model\ResourceModel\Permissions\Collection',
-        'Magento\Authorization\Model\ResourceModel\Rules\Collection'
     ],
     ['Mage_Adminhtml_Block_Abstract', 'Magento\Backend\Block\AbstractBlock'],
     ['Mage_Adminhtml_Block_Backup_Grid'],
@@ -791,7 +785,6 @@ return [
     ['Mage_Core_Model_Config_Fieldset', 'Magento\Core\Model\Fieldset\Config'],
     ['Mage_Core_Model_Config_Options', 'Magento\Framework\Filesystem'],
     ['Magento\Framework\App\Dir', 'Magento\Framework\Filesystem'],
-    ['Magento\Framework\EntityManager\CustomAttributesMapper'],
     ['Magento\Framework\Filesystem\Adapter\Local', 'Magento\Framework\Filesystem\Driver\File'],
     ['Magento\Framework\Filesystem\Adapter\Zlib', 'Magento\Framework\Filesystem\Driver\Zlib'],
     ['Magento\Framework\Filesystem\AdapterInterface'],
@@ -1820,7 +1813,7 @@ return [
     ],
     ['Magento\Adminhtml\Block\Report\Shopcart\Product', 'Magento\Reports\Block\Adminhtml\Shopcart\Product'],
     ['Magento\Adminhtml\Block\Report\Wishlist\Grid', 'Magento\Reports\Block\Adminhtml\Wishlist\Grid'],
-    ['Magento\Adminhtml\Block\Report\Wishlist'],
+    ['Magento\Adminhtml\Block\Report\Wishlist', 'Magento\Reports\Block\Adminhtml\Wishlist'],
     ['Magento\Backend\Helper\Addresses'],
     ['Magento\Backend\Controller\Adminhtml\System\Variable', 'Magento\Variable\Controller\Adminhtml\System\Variable'],
     [
@@ -3228,8 +3221,6 @@ return [
     ['Magento\Tax\Model\ResourceModel\Sales\Order\Tax\Item', 'Magento\Sales\Model\ResourceModel\Order\Tax\Item'],
     ['Magento\Tax\Model\Sales\Order\Tax\Item', 'Magento\Sales\Model\Order\Tax\Item'],
     ['Magento\Reports\Block\Adminhtml\Product\Grid'],
-    ['Magento\Reports\Block\Adminhtml\Product\Widget\Viewed\Item'],
-    ['Magento\Reports\Block\Adminhtml\Wishlist'],
     ['Magento\Reports\Model\Totals'],
     ['Magento\Log\Model\Shell'],
     ['Magento\Log\App\Shell'],
@@ -3834,8 +3825,8 @@ return [
     ],
     ['Magento\Setup\Model\Deployer', 'Magento\Deploy\Model\Deployer'],
     [
-        'Magento\Deploy\Console\Command\DeployStaticContentCommand',
-        'Magento\Setup\Console\Command\DeployStaticContentCommand'
+        'Magento\Setup\Console\Command\DeployStaticContentCommand',
+        'Magento\Deploy\Console\Command\DeployStaticContentCommand'
     ],
     [
         'Magento\Setup\Test\Unit\Console\Command\DeployStaticContentCommandTest',
@@ -4240,8 +4231,4 @@ return [
     ['Magento\Framework\Search\Document', 'Magento\Framework\Api\Search\Document'],
     ['Magento\Framework\Search\DocumentField'],
     ['Magento\Quote\Setup\Recurring'],
-    ['Magento\Framework\Acl\Cache'],
-    ['Magento\Framework\Acl\CacheInterface'],
-    ['Magento\Framework\Acl\Test\Unit\CacheTest'],
-    ['Magento\Eav\Model\Entity\Attribute\Backend\Serialized'],
 ];

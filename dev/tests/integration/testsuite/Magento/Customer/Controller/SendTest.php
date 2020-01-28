@@ -21,28 +21,27 @@ class SendTest extends AbstractController
     /** @var FormKey */
     private $formKey;
 
-    /**
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
     protected function setUp()
     {
         parent::setUp();
-        $logger = $this->createMock(LoggerInterface::class);
-        $session = Bootstrap::getObjectManager()->create(
-            Session::class,
-            [$logger]
-        );
+
         $this->accountManagement = Bootstrap::getObjectManager()->create(AccountManagementInterface::class);
         $this->formKey = Bootstrap::getObjectManager()->create(FormKey::class);
-        $customer = $this->accountManagement->authenticate('customer@example.com', 'password');
-        $session->setCustomerDataAsLoggedIn($customer);
     }
 
     /**
      * @magentoDataFixture Magento/Customer/_files/customer.php
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function testExecutePost()
     {
+        $logger = $this->getMock(LoggerInterface::class);
+        $session = Bootstrap::getObjectManager()->create(
+            Session::class,
+            [$logger]
+        );
+        $customer = $this->accountManagement->authenticate('customer@example.com', 'password');
+        $session->setCustomerDataAsLoggedIn($customer);
         $this->getRequest()
             ->setMethod('POST')
             ->setPostValue(
@@ -51,7 +50,6 @@ class SendTest extends AbstractController
                     'emails' => 'example1@gmail.com, example2@gmail.com, example3@gmail.com'
                 ]
             );
-
         $this->dispatch('wishlist/index/send');
         $this->assertRedirect($this->stringContains('wishlist/index/index'));
         $this->assertSessionMessages(

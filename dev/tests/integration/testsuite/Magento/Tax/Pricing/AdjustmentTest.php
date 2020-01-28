@@ -4,9 +4,11 @@
  * See COPYING.txt for license details.
  */
 
+// @codingStandardsIgnoreFile
+
 namespace Magento\Tax\Pricing;
 
-class AdjustmentTest extends \PHPUnit\Framework\TestCase
+class AdjustmentTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @param $isShippingPriceExcludeTax
@@ -16,9 +18,9 @@ class AdjustmentTest extends \PHPUnit\Framework\TestCase
     {
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         /** @var \Magento\Tax\Model\Config $config */
-        $config = $objectManager->get(\Magento\Tax\Model\Config::class);
+        $config = $objectManager->get('Magento\Tax\Model\Config');
         /** @var \Magento\Tax\Pricing\Adjustment $model */
-        $model = $objectManager->create(\Magento\Tax\Pricing\Adjustment::class);
+        $model = $objectManager->create('Magento\Tax\Pricing\Adjustment');
         $config->setNeedUseShippingExcludeTax($isShippingPriceExcludeTax);
         // Run tested method
         $result = $model->isIncludedInBasePrice();
@@ -31,7 +33,7 @@ class AdjustmentTest extends \PHPUnit\Framework\TestCase
      * @param bool $isShippingPriceExcludeTax
      * @param bool $expectedResult
      * @magentoConfigFixture current_store tax/calculation/price_includes_tax 1
-     * @dataProvider isIncludedInBasePricePriceIncludeTaxEnabledDataProvider
+     * @dataProvider IsIncludedInBasePricePriceIncludeTaxEnabledDataProvider
      */
     public function testIsIncludedInBasePricePriceIncludeTacEnabled($isShippingPriceExcludeTax, $expectedResult)
     {
@@ -42,7 +44,7 @@ class AdjustmentTest extends \PHPUnit\Framework\TestCase
      * @param bool $isShippingPriceExcludeTax
      * @param bool $expectedResult
      * @magentoConfigFixture current_store tax/calculation/price_includes_tax 0
-     * @dataProvider isIncludedInBasePricePriceIncludeTaxDisabledDataProvider
+     * @dataProvider IsIncludedInBasePricePriceIncludeTaxDisabledDataProvider
      */
     public function testIsIncludedInBasePricePriceIncludeTacDisabled($isShippingPriceExcludeTax, $expectedResult)
     {
@@ -52,7 +54,7 @@ class AdjustmentTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function isIncludedInBasePricePriceIncludeTaxEnabledDataProvider()
+    public function IsIncludedInBasePricePriceIncludeTaxEnabledDataProvider()
     {
         return [
             [0, true],
@@ -63,7 +65,7 @@ class AdjustmentTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function isIncludedInBasePricePriceIncludeTaxDisabledDataProvider()
+    public function IsIncludedInBasePricePriceIncludeTaxDisabledDataProvider()
     {
         return [
             [0, false],
@@ -81,7 +83,7 @@ class AdjustmentTest extends \PHPUnit\Framework\TestCase
         // Instantiate objects
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         /** @var \Magento\Tax\Pricing\Adjustment $model */
-        $model = $objectManager->create(\Magento\Tax\Pricing\Adjustment::class);
+        $model = $objectManager->create('Magento\Tax\Pricing\Adjustment');
         // Run tested method
         $result = $model->isIncludedInDisplayPrice();
         // Check expectations

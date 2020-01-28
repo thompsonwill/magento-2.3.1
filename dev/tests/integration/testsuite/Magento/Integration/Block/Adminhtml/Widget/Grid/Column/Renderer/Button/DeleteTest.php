@@ -12,7 +12,7 @@ use Magento\Integration\Model\Integration;
  * @magentoAppArea adminhtml
  * @magentoDataFixture Magento/Integration/_files/integration_all_permissions.php
  */
-class DeleteTest extends \PHPUnit\Framework\TestCase
+class DeleteTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \Magento\Integration\Block\Adminhtml\Widget\Grid\Column\Renderer\Button\Delete
@@ -70,6 +70,7 @@ class DeleteTest extends \PHPUnit\Framework\TestCase
         /** @var $integration Integration */
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $integration = $objectManager->create(\Magento\Integration\Model\Integration::class);
+        
         return $integration->load('Fixture Integration', 'name');
     }
 }

@@ -86,24 +86,24 @@ class AccountManagementTest extends WebapiAbstract
     public function setUp()
     {
         $this->accountManagement = Bootstrap::getObjectManager()->get(
-            \Magento\Customer\Api\AccountManagementInterface::class
+            'Magento\Customer\Api\AccountManagementInterface'
         );
         $this->searchCriteriaBuilder = Bootstrap::getObjectManager()->create(
-            \Magento\Framework\Api\SearchCriteriaBuilder::class
+            'Magento\Framework\Api\SearchCriteriaBuilder'
         );
         $this->sortOrderBuilder = Bootstrap::getObjectManager()->create(
-            \Magento\Framework\Api\SortOrderBuilder::class
+            'Magento\Framework\Api\SortOrderBuilder'
         );
         $this->filterGroupBuilder = Bootstrap::getObjectManager()->create(
-            \Magento\Framework\Api\Search\FilterGroupBuilder::class
+            'Magento\Framework\Api\Search\FilterGroupBuilder'
         );
         $this->customerHelper = new CustomerHelper();
 
         $this->dataObjectProcessor = Bootstrap::getObjectManager()->create(
-            \Magento\Framework\Reflection\DataObjectProcessor::class
+            'Magento\Framework\Reflection\DataObjectProcessor'
         );
         $this->config = Bootstrap::getObjectManager()->create(
-            \Magento\Config\Model\Config::class
+            'Magento\Config\Model\Config'
         );
         $this->initSubscriber();
 
@@ -182,7 +182,7 @@ class AccountManagementTest extends WebapiAbstract
 
         $customerDataArray = $this->dataObjectProcessor->buildOutputDataArray(
             $this->customerHelper->createSampleCustomerDataObject(),
-            \Magento\Customer\Api\Data\CustomerInterface::class
+            '\Magento\Customer\Api\Data\CustomerInterface'
         );
         $invalidEmail = 'invalid';
         $customerDataArray['email'] = $invalidEmail;
@@ -220,15 +220,7 @@ class AccountManagementTest extends WebapiAbstract
     public function testActivateCustomer()
     {
         $customerData = $this->_createCustomer();
-
-        // Update the customer's confirmation key to a known value
-        $customerData = $this->customerHelper->updateSampleCustomer(
-            $customerData[Customer::ID],
-            [
-                'id' => $customerData[Customer::ID],
-                'confirmation' => CustomerHelper::CONFIRMATION
-            ]
-        );
+        $this->assertNotNull($customerData[Customer::CONFIRMATION], 'Customer activation is not required');
 
         $serviceInfo = [
             'rest' => [
@@ -244,15 +236,16 @@ class AccountManagementTest extends WebapiAbstract
 
         $requestData = [
             'email' => $customerData[Customer::EMAIL],
-            'confirmationKey' => CustomerHelper::CONFIRMATION
+            'confirmationKey' => $customerData[Customer::CONFIRMATION],
         ];
 
-        try {
-            $result = $this->_webApiCall($serviceInfo, $requestData);
-            $this->assertEquals($customerData[Customer::ID], $result[Customer::ID], 'Wrong customer!');
-        } catch (\Exception $e) {
-            $this->fail('Customer is not activated.');
-        }
+        $result = $this->_webApiCall($serviceInfo, $requestData);
+
+        $this->assertEquals($customerData[Customer::ID], $result[Customer::ID], 'Wrong customer!');
+        $this->assertTrue(
+            !isset($result[Customer::CONFIRMATION]) || $result[Customer::CONFIRMATION] === null,
+            'Customer is not activated!'
+        );
     }
 
     public function testGetCustomerActivateCustomer()
@@ -272,22 +265,21 @@ class AccountManagementTest extends WebapiAbstract
         ];
         $requestData = [
             'email' => $customerData[Customer::EMAIL],
-            'confirmationKey' => CustomerHelper::CONFIRMATION
+            'confirmationKey' => $customerData[Customer::CONFIRMATION],
         ];
 
-        try {
-            $customerResponseData = $this->_webApiCall($serviceInfo, $requestData);
-            $this->assertEquals($customerData[Customer::ID], $customerResponseData[Customer::ID]);
-        } catch (\Exception $e) {
-            $this->fail('Customer is not activated.');
-        }
+        $customerResponseData = $this->_webApiCall($serviceInfo, $requestData);
+
+        $this->assertEquals($customerData[Customer::ID], $customerResponseData[Customer::ID]);
+        // Confirmation key is removed after confirmation
+        $this->assertFalse(isset($customerResponseData[Customer::CONFIRMATION]));
     }
 
     public function testValidateResetPasswordLinkToken()
     {
         $customerData = $this->_createCustomer();
         /** @var \Magento\Customer\Model\Customer $customerModel */
-        $customerModel = Bootstrap::getObjectManager()->create(\Magento\Customer\Model\CustomerFactory::class)
+        $customerModel = Bootstrap::getObjectManager()->create('Magento\Customer\Model\CustomerFactory')
             ->create();
         $customerModel->load($customerData[Customer::ID]);
         $rpToken = 'lsdj579slkj5987slkj595lkj';
@@ -577,14 +569,14 @@ class AccountManagementTest extends WebapiAbstract
         ];
         $customerData = $this->dataObjectProcessor->buildOutputDataArray(
             $customerData,
-            \Magento\Customer\Api\Data\CustomerInterface::class
+            '\Magento\Customer\Api\Data\CustomerInterface'
         );
         $requestData = ['customer' => $customerData];
         $validationResponse = $this->_webApiCall($serviceInfo, $requestData);
         $this->assertFalse($validationResponse['valid']);
 
-        $this->assertEquals('The value of attribute "First Name" must be set', $validationResponse['messages'][0]);
-        $this->assertEquals('The value of attribute "Last Name" must be set', $validationResponse['messages'][1]);
+        $this->assertEquals('The value of attribute "firstname" must be set', $validationResponse['messages'][0]);
+        $this->assertEquals('The value of attribute "lastname" must be set', $validationResponse['messages'][1]);
     }
 
     public function testIsReadonly()
@@ -686,7 +678,7 @@ class AccountManagementTest extends WebapiAbstract
 
         $customerDataArray = $this->dataObjectProcessor->buildOutputDataArray(
             $customerData,
-            \Magento\Customer\Api\Data\CustomerInterface::class
+            '\Magento\Customer\Api\Data\CustomerInterface'
         );
         $requestData = ['customer' => $customerDataArray, 'password' => CustomerHelper::PASSWORD];
         $customerData = $this->_webApiCall($serviceInfo, $requestData);
@@ -828,11 +820,11 @@ class AccountManagementTest extends WebapiAbstract
         $this->assertEquals($customerData['id'], $this->subscriber->getCustomerId());
         //Manage customer in order to unsubscribe
         $this->customerHelper->updateSampleCustomer(
-            $customerData["id"],
             array_merge(
                 $customerData,
                 ["extension_attributes" => ["is_subscribed" => false]]
-            )
+            ),
+            $customerData["id"]
         );
         $this->initSubscriber();
 

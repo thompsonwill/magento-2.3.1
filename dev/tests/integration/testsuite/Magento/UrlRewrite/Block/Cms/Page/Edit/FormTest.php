@@ -9,7 +9,7 @@ namespace Magento\UrlRewrite\Block\Cms\Page\Edit;
  * Test for \Magento\UrlRewrite\Block\Cms\Page\Edit\FormTest
  * @magentoAppArea adminhtml
  */
-class FormTest extends \PHPUnit\Framework\TestCase
+class FormTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Get form instance
@@ -21,11 +21,11 @@ class FormTest extends \PHPUnit\Framework\TestCase
     {
         /** @var $layout \Magento\Framework\View\Layout */
         $layout = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->get(
-            \Magento\Framework\View\LayoutInterface::class
+            'Magento\Framework\View\LayoutInterface'
         );
         /** @var $block \Magento\UrlRewrite\Block\Cms\Page\Edit\Form */
         $block = $layout->createBlock(
-            \Magento\UrlRewrite\Block\Cms\Page\Edit\Form::class,
+            'Magento\UrlRewrite\Block\Cms\Page\Edit\Form',
             'block',
             ['data' => $args]
         );
@@ -53,7 +53,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $args = [];
         if ($cmsPageData) {
             $args['cms_page'] = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-                \Magento\Cms\Model\Page::class,
+                'Magento\Cms\Model\Page',
                 ['data' => $cmsPageData]
             );
         }
@@ -78,11 +78,10 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $form = $this->_getFormInstance($args);
 
         $expectedStores = [
-            ['label' => 'Main Website', 'value' => [], '__disableTmpl' => true],
+            ['label' => 'Main Website', 'value' => []],
             [
                 'label' => '    Main Website Store',
-                'value' => [['label' => '    Default Store View', 'value' => 1]],
-                '__disableTmpl' => true
+                'value' => [['label' => '    Default Store View', 'value' => 1]]
             ],
         ];
         $this->assertEquals($expectedStores, $form->getElement('store_id')->getValues());
@@ -133,14 +132,14 @@ class FormTest extends \PHPUnit\Framework\TestCase
     protected function _getCmsPageWithStoresMock($stores)
     {
         $resourceMock = $this->getMockBuilder(
-            \Magento\Cms\Model\ResourceModel\Page::class
+            'Magento\Cms\Model\ResourceModel\Page'
         )->setMethods(
             ['lookupStoreIds']
         )->disableOriginalConstructor()->getMock();
         $resourceMock->expects($this->any())->method('lookupStoreIds')->will($this->returnValue($stores));
 
         $cmsPageMock = $this->getMockBuilder(
-            \Magento\Cms\Model\Page::class
+            'Magento\Cms\Model\Page'
         )->setMethods(
             ['getResource', 'getId']
         )->disableOriginalConstructor()->getMock();

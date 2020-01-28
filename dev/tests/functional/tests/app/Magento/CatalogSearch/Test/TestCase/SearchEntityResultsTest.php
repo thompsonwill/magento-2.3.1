@@ -9,7 +9,6 @@ namespace Magento\CatalogSearch\Test\TestCase;
 use Magento\CatalogSearch\Test\Fixture\CatalogSearchQuery;
 use Magento\Cms\Test\Page\CmsIndex;
 use Magento\Mtf\TestCase\Injectable;
-use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
 
 /**
  * Preconditions:
@@ -20,13 +19,14 @@ use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
  * 2. Input test data into "search field" and press Enter key.
  * 3. Perform all assertions.
  *
- * @group Search_Frontend
- * @ZephyrId MAGETWO-25095, MAGETWO-36542, MAGETWO-43235
+ * @group Search_Frontend_(MX)
+ * @ZephyrId MAGETWO-25095
  */
 class SearchEntityResultsTest extends Injectable
 {
     /* tags */
     const MVP = 'yes';
+    const DOMAIN = 'MX';
     const TEST_TYPE = 'acceptance_test, extended_acceptance_test';
     /* end tags */
 
@@ -38,44 +38,25 @@ class SearchEntityResultsTest extends Injectable
     protected $cmsIndex;
 
     /**
-     * @var EnvWhitelist
-     */
-    private $envWhitelist;
-
-    /**
      * Inject data.
      *
      * @param CmsIndex $cmsIndex
-     * @param EnvWhitelist $envWhitelist
      * @return void
      */
-    public function __inject(
-        CmsIndex $cmsIndex,
-        EnvWhitelist $envWhitelist
-    ) {
+    public function __inject(CmsIndex $cmsIndex)
+    {
         $this->cmsIndex = $cmsIndex;
-        $this->envWhitelist = $envWhitelist;
     }
 
     /**
      * Run searching result test.
      *
      * @param CatalogSearchQuery $catalogSearch
-     * @param string|null $queryLength
      * @return void
      */
-    public function test(CatalogSearchQuery $catalogSearch, $queryLength = null)
+    public function test(CatalogSearchQuery $catalogSearch)
     {
-        $this->envWhitelist->addHost('example.com');
         $this->cmsIndex->open();
-        $this->cmsIndex->getSearchBlock()->search($catalogSearch->getQueryText(), $queryLength);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function tearDown()
-    {
-        $this->envWhitelist->removeHost('example.com');
+        $this->cmsIndex->getSearchBlock()->search($catalogSearch->getQueryText());
     }
 }

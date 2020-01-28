@@ -3,7 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
 
 namespace Magento\Rss\Controller\Feed;
 
@@ -100,7 +99,7 @@ class IndexTest extends \Magento\TestFramework\TestCase\AbstractBackendControlle
      * @param mixed $wishlistId
      * @return string
      */
-    private function getLink($customerId, string $customerEmail, $wishlistId): string
+    private function getLink($customerId, $customerEmail, $wishlistId)
     {
         return 'rss/feed/index/type/wishlist/data/'
             . base64_encode($customerId . ',' . $customerEmail)

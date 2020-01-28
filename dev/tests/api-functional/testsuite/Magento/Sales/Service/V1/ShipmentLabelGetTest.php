@@ -32,9 +32,7 @@ class ShipmentLabelGetTest extends WebapiAbstract
     public function testShipmentGet()
     {
         /** @var \Magento\Sales\Model\Order\Shipment $shipment */
-        $shipmentCollection = $this->objectManager->get(
-            \Magento\Sales\Model\ResourceModel\Order\Shipment\Collection::class
-        );
+        $shipmentCollection = $this->objectManager->get('Magento\Sales\Model\ResourceModel\Order\Shipment\Collection');
         $shipment = $shipmentCollection->getFirstItem();
         $shipment->setShippingLabel('test_shipping_label');
         $shipment->save();
@@ -50,6 +48,6 @@ class ShipmentLabelGetTest extends WebapiAbstract
             ],
         ];
         $result = $this->_webApiCall($serviceInfo, ['id' => $shipment->getId()]);
-        $this->assertEquals($result, base64_encode('test_shipping_label'));
+        $this->assertEquals($result, 'test_shipping_label');
     }
 }

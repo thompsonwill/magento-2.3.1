@@ -9,12 +9,9 @@ use Magento\Framework\App\Request\Http as HttpRequest;
 
 class SaveTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
+
     /**
-     * Test save action.
-     *
-     * @param string $currencyCode
-     * @param string $inputCurrencySymbol
-     * @param string $outputCurrencySymbol
+     * Test save action
      *
      * @magentoConfigFixture               currency/options/allow USD
      * @magentoDbIsolation enabled

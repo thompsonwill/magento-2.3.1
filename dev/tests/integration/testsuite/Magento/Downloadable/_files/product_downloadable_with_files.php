@@ -4,28 +4,14 @@
  * See COPYING.txt for license details.
  */
 
-use Magento\Downloadable\Api\DomainManagerInterface;
-
 \Magento\TestFramework\Helper\Bootstrap::getInstance()->getInstance()->reinitialize();
 $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
-
-/** @var DomainManagerInterface $domainManager */
-$domainManager = $objectManager->get(DomainManagerInterface::class);
-$domainManager->addDomains(
-    [
-        'example.com',
-        'www.example.com',
-        'www.sample.example.com',
-        'google.com'
-    ]
-);
-
 /**
  * @var \Magento\Catalog\Model\Product $product
  */
-$product = $objectManager->create(\Magento\Catalog\Model\Product::class);
-$sampleFactory = $objectManager->create(\Magento\Downloadable\Api\Data\SampleInterfaceFactory::class);
-$linkFactory = $objectManager->create(\Magento\Downloadable\Api\Data\LinkInterfaceFactory::class);
+$product = $objectManager->create('Magento\Catalog\Model\Product');
+$sampleFactory = $objectManager->create('Magento\Downloadable\Api\Data\SampleInterfaceFactory');
+$linkFactory = $objectManager->create('Magento\Downloadable\Api\Data\LinkInterfaceFactory');
 
 $downloadableData = [
     'sample' => [
@@ -93,21 +79,20 @@ $link->setSampleType($linkData['sample']['type']);
 /**
  * @var \Magento\Downloadable\Api\Data\File\ContentInterface $content
  */
-$content = $objectManager->create(\Magento\Downloadable\Api\Data\File\ContentInterfaceFactory::class)->create();
+$content = $objectManager->create('Magento\Downloadable\Api\Data\File\ContentInterfaceFactory')->create();
 $content->setFileData(
-    // @codingStandardsIgnoreLine
-    base64_encode(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR . 'test_image.jpg'))
+    base64_encode(file_get_contents(__DIR__.DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR.'test_image.jpg'))
 );
 $content->setName('jellyfish_2_4.jpg');
+//$content->setName('');
 $link->setLinkFileContent($content);
 
 /**
  * @var \Magento\Downloadable\Api\Data\File\ContentInterface $sampleContent
  */
-$sampleContent = $objectManager->create(\Magento\Downloadable\Api\Data\File\ContentInterfaceFactory::class)->create();
+$sampleContent = $objectManager->create('Magento\Downloadable\Api\Data\File\ContentInterfaceFactory')->create();
 $sampleContent->setFileData(
-    // @codingStandardsIgnoreLine
-    base64_encode(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR . 'test_image.jpg'))
+    base64_encode(file_get_contents(__DIR__.DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR.'test_image.jpg'))
 );
 $sampleContent->setName('jellyfish_1_3.jpg');
 $link->setSampleFileContent($sampleContent);
@@ -126,6 +111,8 @@ if ($link->getIsUnlimited()) {
     $link->setNumberOfDownloads(0);
 }
 $links[] = $link;
+
+
 
 $extension->setDownloadableProductLinks($links);
 
@@ -147,12 +134,9 @@ if (isset($downloadableData['sample']) && is_array($downloadableData['sample']))
             /**
              * @var \Magento\Downloadable\Api\Data\File\ContentInterface $content
              */
-            $content = $objectManager->create(
-                \Magento\Downloadable\Api\Data\File\ContentInterfaceFactory::class
-            )->create();
+            $content = $objectManager->create('Magento\Downloadable\Api\Data\File\ContentInterfaceFactory')->create();
             $content->setFileData(
-                // @codingStandardsIgnoreLine
-                base64_encode(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR . 'test_image.jpg'))
+                base64_encode(file_get_contents(__DIR__.DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR.'test_image.jpg'))
             );
             $content->setName('jellyfish_1_4.jpg');
             $sample->setSampleFileContent($content);
@@ -170,10 +154,3 @@ if ($product->getLinksPurchasedSeparately()) {
     $product->setTypeHasRequiredOptions(false)->setRequiredOptions(false);
 }
 $product->save();
-
-$stockRegistry = $objectManager->get(\Magento\CatalogInventory\Api\StockRegistryInterface::class);
-$stockItem = $stockRegistry->getStockItem($product->getId());
-$stockItem->setUseConfigManageStock(true);
-$stockItem->setQty(100);
-$stockItem->setIsInStock(true);
-$stockRegistry->updateStockItemBySku($product->getSku(), $stockItem);

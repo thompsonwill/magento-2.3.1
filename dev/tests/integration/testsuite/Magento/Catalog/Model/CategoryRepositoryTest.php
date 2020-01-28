@@ -3,7 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
 
 namespace Magento\Catalog\Model;
 
@@ -12,14 +11,14 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Catalog\Api\Data\CategoryInterfaceFactory;
 use Magento\Framework\Acl\Builder;
+use Magento\Framework\Acl\CacheInterface;
 use Magento\TestFramework\Helper\Bootstrap;
-use PHPUnit\Framework\TestCase;
 use Magento\TestFramework\Bootstrap as TestBootstrap;
 
 /**
  * Provide tests for CategoryRepository model.
  */
-class CategoryRepositoryTest extends TestCase
+class CategoryRepositoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Test subject.
@@ -39,6 +38,11 @@ class CategoryRepositoryTest extends TestCase
     private $aclBuilder;
 
     /**
+     * @var CacheInterface
+     */
+    private $aclCache;
+
+    /**
      * @var CategoryInterfaceFactory
      */
     private $categoryFactory;
@@ -53,6 +57,7 @@ class CategoryRepositoryTest extends TestCase
         $this->repository = Bootstrap::getObjectManager()->create(CategoryRepositoryInterface::class);
         $this->authorization = Bootstrap::getObjectManager()->get(Auth::class);
         $this->aclBuilder = Bootstrap::getObjectManager()->get(Builder::class);
+        $this->aclCache = Bootstrap::getObjectManager()->get(CacheInterface::class);
         $this->categoryFactory = Bootstrap::getObjectManager()->get(CategoryInterfaceFactory::class);
         $this->authorization->login(TestBootstrap::ADMIN_NAME, TestBootstrap::ADMIN_PASSWORD);
     }
@@ -65,7 +70,7 @@ class CategoryRepositoryTest extends TestCase
         parent::tearDown();
 
         $this->authorization->logout();
-        $this->aclBuilder->resetRuntimeAcl();
+        $this->aclCache->clean();
     }
 
     /**

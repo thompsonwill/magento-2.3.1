@@ -3,8 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
-
 namespace Magento\Checkout\Api;
 
 use Magento\Checkout\Api\Data\ShippingInformationInterface;
@@ -14,14 +12,13 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\TestFramework\Helper\Bootstrap;
-use PHPUnit\Framework\TestCase;
 use Magento\Quote\Model\QuoteIdMask;
 use Magento\Quote\Model\QuoteIdMaskFactory;
 
 /**
  * Test GuestShippingInformationManagement API.
  */
-class GuestShippingInformationManagementTest extends TestCase
+class GuestShippingInformationManagementTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var GuestShippingInformationManagementInterface
@@ -79,7 +76,7 @@ class GuestShippingInformationManagementTest extends TestCase
      * @expectedException  \Magento\Framework\Exception\InputException
      * @expectedExceptionMessage Unable to save shipping information. Please check input data.
      */
-    public function testDifferentAddresses(bool $swapShipping)
+    public function testDifferentAddresses($swapShipping)
     {
         $carts = $this->cartRepo->getList(
             $this->searchCriteria->addFilter('reserved_order_id', 'test01')->create()
@@ -116,7 +113,7 @@ class GuestShippingInformationManagementTest extends TestCase
     /**
      * @return array
      */
-    public function differentAddressesDataProvider(): array
+    public function differentAddressesDataProvider()
     {
         return [
             'Shipping address swap' => [true],

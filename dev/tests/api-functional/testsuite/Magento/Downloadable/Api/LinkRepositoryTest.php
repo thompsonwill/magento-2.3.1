@@ -11,9 +11,6 @@ use Magento\Downloadable\Model\Link;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\TestFramework\TestCase\WebapiAbstract;
 
-/**
- * API tests for Magento\Downloadable\Model\LinkRepository.
- */
 class LinkRepositoryTest extends WebapiAbstract
 {
     /**
@@ -85,12 +82,9 @@ class LinkRepositoryTest extends WebapiAbstract
     {
         $objectManager = Bootstrap::getObjectManager();
         if ($isScopeGlobal) {
-            $product = $objectManager->get(\Magento\Catalog\Model\ProductFactory::class)
-                ->create()
-                ->setStoreId(0)
-                ->load(1);
+            $product = $objectManager->get('Magento\Catalog\Model\ProductFactory')->create()->setStoreId(0)->load(1);
         } else {
-            $product = $objectManager->get(\Magento\Catalog\Model\ProductFactory::class)->create()->load(1);
+            $product = $objectManager->get('Magento\Catalog\Model\ProductFactory')->create()->load(1);
         }
 
         return $product;
@@ -288,64 +282,6 @@ class LinkRepositoryTest extends WebapiAbstract
                     'file_data' => 'not_a_base64_encoded_content',
                     'name' => 'image.jpg',
                 ],
-            ],
-        ];
-
-        $this->_webApiCall($this->createServiceInfo, $requestData);
-    }
-
-    /**
-     * Check that error appears when link file not existing in filesystem.
-     *
-     * @magentoApiDataFixture Magento/Downloadable/_files/product_downloadable.php
-     * @expectedException \Exception
-     * @expectedExceptionMessage Link file not found. Please try again.
-     * @return void
-     */
-    public function testCreateLinkWithMissingLinkFileThrowsException()
-    {
-        $requestData = [
-            'isGlobalScopeContent' => false,
-            'sku' => 'downloadable-product',
-            'link' => [
-                'title' => 'Link Title',
-                'sort_order' => 1,
-                'price' => 10,
-                'is_shareable' => 1,
-                'number_of_downloads' => 100,
-                'link_type' => 'file',
-                'link_file' => '/n/o/nexistfile.png',
-                'sample_type' => 'url',
-                'sample_file' => 'http://google.com',
-            ],
-        ];
-
-        $this->_webApiCall($this->createServiceInfo, $requestData);
-    }
-
-    /**
-     * Check that error appears when link sample file not existing in filesystem.
-     *
-     * @magentoApiDataFixture Magento/Downloadable/_files/product_downloadable.php
-     * @expectedException \Exception
-     * @expectedExceptionMessage Link sample file not found. Please try again.
-     * @return void
-     */
-    public function testCreateLinkWithMissingSampleFileThrowsException()
-    {
-        $requestData = [
-            'isGlobalScopeContent' => false,
-            'sku' => 'downloadable-product',
-            'link' => [
-                'title' => 'Link Title',
-                'sort_order' => 1,
-                'price' => 10,
-                'is_shareable' => 1,
-                'number_of_downloads' => 100,
-                'link_type' => 'url',
-                'link_url' => 'http://www.example.com/',
-                'sample_type' => 'file',
-                'sample_file' => '/n/o/nexistfile.png',
             ],
         ];
 
@@ -670,9 +606,7 @@ class LinkRepositoryTest extends WebapiAbstract
                 'is_shareable' => 0,
                 'number_of_downloads' => 50,
                 'link_type' => 'url',
-                'link_url' => 'http://google.com',
                 'sample_type' => 'url',
-                'sample_url' => 'http://google.com',
             ],
         ];
         $this->assertEquals($linkId, $this->_webApiCall($this->updateServiceInfo, $requestData));
@@ -705,9 +639,7 @@ class LinkRepositoryTest extends WebapiAbstract
                 'is_shareable' => 0,
                 'number_of_downloads' => 50,
                 'link_type' => 'url',
-                'link_url' => 'http://google.com',
                 'sample_type' => 'url',
-                'sample_url' => 'http://google.com',
             ],
         ];
 
@@ -1003,57 +935,5 @@ class LinkRepositoryTest extends WebapiAbstract
                 $linkExpectation,
             ],
         ];
-    }
-
-    /**
-     * @magentoApiDataFixture Magento/Downloadable/_files/product_downloadable.php
-     * @expectedException \Exception
-     * @expectedExceptionMessage Link URL's domain is not in list of downloadable_domains in env.php.
-     */
-    public function testCreateThrowsExceptionIfLinkUrlUsesDomainNotInWhitelist()
-    {
-        $requestData = [
-            'isGlobalScopeContent' => false,
-            'sku' => 'downloadable-product',
-            'link' => [
-                'title' => 'Link Title',
-                'sort_order' => 1,
-                'price' => 10,
-                'is_shareable' => 1,
-                'number_of_downloads' => 100,
-                'link_type' => 'url',
-                'link_url' => 'http://notAnywhereInEnv.com/',
-                'sample_type' => 'url',
-                'sample_url' => 'http://www.example.com/',
-            ],
-        ];
-
-        $this->_webApiCall($this->createServiceInfo, $requestData);
-    }
-
-    /**
-     * @magentoApiDataFixture Magento/Downloadable/_files/product_downloadable.php
-     * @expectedException \Exception
-     * @expectedExceptionMessage Sample URL's domain is not in list of downloadable_domains in env.php.
-     */
-    public function testCreateThrowsExceptionIfSampleUrlUsesDomainNotInWhitelist()
-    {
-        $requestData = [
-            'isGlobalScopeContent' => false,
-            'sku' => 'downloadable-product',
-            'link' => [
-                'title' => 'Link Title',
-                'sort_order' => 1,
-                'price' => 10,
-                'is_shareable' => 1,
-                'number_of_downloads' => 100,
-                'link_type' => 'url',
-                'link_url' => 'http://example.com/',
-                'sample_type' => 'url',
-                'sample_url' => 'http://www.notAnywhereInEnv.com/',
-            ],
-        ];
-
-        $this->_webApiCall($this->createServiceInfo, $requestData);
     }
 }

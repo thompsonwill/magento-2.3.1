@@ -21,13 +21,7 @@ class UserTest extends \Magento\TestFramework\TestCase\AbstractBackendController
         $this->dispatch('backend/admin/user/index');
         $response = $this->getResponse()->getBody();
         $this->assertContains('Users', $response);
-        $this->assertEquals(
-            1,
-            \Magento\TestFramework\Helper\Xpath::getElementsCountForXpath(
-                '//*[@id="permissionsUserGrid_table"]',
-                $response
-            )
-        );
+        $this->assertSelectCount('#permissionsUserGrid_table', 1, $response);
     }
 
     /**
@@ -246,13 +240,7 @@ class UserTest extends \Magento\TestFramework\TestCase\AbstractBackendController
         //check "User Information" header and fieldset
         $this->assertContains('data-ui-id="adminhtml-user-edit-tabs-title"', $response);
         $this->assertContains('User Information', $response);
-        $this->assertEquals(
-            1,
-            \Magento\TestFramework\Helper\Xpath::getElementsCountForXpath(
-                '//*[@id="user_base_fieldset"]',
-                $response
-            )
-        );
+        $this->assertSelectCount('#user_base_fieldset', 1, $response);
     }
 
     /**
@@ -276,37 +264,13 @@ class UserTest extends \Magento\TestFramework\TestCase\AbstractBackendController
         $this->assertEquals('{"error":0}', $body);
     }
 
-    /**
-     * Verify that an unknown top level domain on an email address does not fail validation
-     */
-    public function testValidateActionUnknownTldSuccess()
-    {
-        $data = [
-            'username' => 'admin2',
-            'firstname' => 'new firstname',
-            'lastname' => 'new lastname',
-            'email' => 'example@domain.unknown',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
-        ];
-
-        $this->getRequest()->setPostValue($data);
-        $this->dispatch('backend/admin/user/validate');
-        $body = $this->getResponse()->getBody();
-
-        $this->assertEquals('{"error":0}', $body);
-    }
-
-    /**
-     * Verify that an invalid email address format fails the validation
-     */
     public function testValidateActionError()
     {
         $data = [
             'username' => 'admin2',
             'firstname' => 'new firstname',
             'lastname' => 'new lastname',
-            'email' => 'example@-domain.cim',
+            'email' => 'example@domain.cim',
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ];
@@ -319,6 +283,6 @@ class UserTest extends \Magento\TestFramework\TestCase\AbstractBackendController
         $body = $this->getResponse()->getBody();
 
         $this->assertContains('{"error":1,"html_message":', $body);
-        $this->assertContains("'-domain.cim' is not a valid hostname for email address 'example@-domain.cim", $body);
+        $this->assertContains("'domain.cim' is not a valid hostname for email address 'example@domain.cim'", $body);
     }
 }

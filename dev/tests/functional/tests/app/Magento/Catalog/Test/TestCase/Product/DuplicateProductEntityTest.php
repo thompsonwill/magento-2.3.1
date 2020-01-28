@@ -11,7 +11,6 @@ use Magento\Catalog\Test\Page\Adminhtml\CatalogProductEdit;
 use Magento\Catalog\Test\Page\Adminhtml\CatalogProductIndex;
 use Magento\Mtf\Fixture\FixtureFactory;
 use Magento\Mtf\TestCase\Injectable;
-use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
 
 /**
  * Precondition:
@@ -24,13 +23,14 @@ use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
  * 4. Click "Save & Duplicate".
  * 5. Perform asserts.
  *
- * @group Products
+ * @group Products_(MX)
  * @ZephyrId MAGETWO-23294
  */
 class DuplicateProductEntityTest extends Injectable
 {
     /* tags */
     const MVP = 'yes';
+    const DOMAIN = 'MX';
     /* end tags */
 
     /**
@@ -62,13 +62,6 @@ class DuplicateProductEntityTest extends Injectable
     protected $fixtureFactory;
 
     /**
-     * DomainWhitelist CLI
-     *
-     * @var EnvWhitelist
-     */
-    private $envWhitelist;
-
-    /**
      * Prepare data.
      *
      * @param Category $category
@@ -91,18 +84,6 @@ class DuplicateProductEntityTest extends Injectable
     }
 
     /**
-     * Setup necessary data for test.
-     *
-     * @param EnvWhitelist $envWhitelist
-     * @return void
-     */
-    public function __inject(
-        EnvWhitelist $envWhitelist
-    ) {
-        $this->envWhitelist = $envWhitelist;
-    }
-
-    /**
      * Run test duplicate product entity.
      *
      * @param string $productType
@@ -111,7 +92,6 @@ class DuplicateProductEntityTest extends Injectable
     public function test($productType)
     {
         // Precondition
-        $this->envWhitelist->addHost('example.com');
         $product = $this->createProduct($productType);
 
         // Steps
@@ -146,13 +126,5 @@ class DuplicateProductEntityTest extends Injectable
         $product->persist();
 
         return $product;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function tearDown()
-    {
-        $this->envWhitelist->removeHost('example.com');
     }
 }

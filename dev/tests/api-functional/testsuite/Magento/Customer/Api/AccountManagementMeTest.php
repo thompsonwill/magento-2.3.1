@@ -74,16 +74,16 @@ class AccountManagementMeTest extends \Magento\TestFramework\TestCase\WebapiAbst
     public function setUp()
     {
         $this->customerRegistry = Bootstrap::getObjectManager()->get(
-            \Magento\Customer\Model\CustomerRegistry::class
+            'Magento\Customer\Model\CustomerRegistry'
         );
 
         $this->customerRepository = Bootstrap::getObjectManager()->get(
-            \Magento\Customer\Api\CustomerRepositoryInterface::class,
+            'Magento\Customer\Api\CustomerRepositoryInterface',
             ['customerRegistry' => $this->customerRegistry]
         );
 
         $this->customerAccountManagement = Bootstrap::getObjectManager()
-            ->get(\Magento\Customer\Api\AccountManagementInterface::class);
+            ->get('Magento\Customer\Api\AccountManagementInterface');
 
         $this->customerHelper = new CustomerHelper();
         $this->customerData = $this->customerHelper->createSampleCustomer();
@@ -93,7 +93,7 @@ class AccountManagementMeTest extends \Magento\TestFramework\TestCase\WebapiAbst
         $this->resetTokenForCustomerSampleData();
 
         $this->dataObjectProcessor = Bootstrap::getObjectManager()->create(
-            \Magento\Framework\Reflection\DataObjectProcessor::class
+            'Magento\Framework\Reflection\DataObjectProcessor'
         );
     }
 
@@ -105,7 +105,7 @@ class AccountManagementMeTest extends \Magento\TestFramework\TestCase\WebapiAbst
         $this->customerRepository = null;
 
         /** @var \Magento\Framework\Registry $registry */
-        $registry = Bootstrap::getObjectManager()->get(\Magento\Framework\Registry::class);
+        $registry = Bootstrap::getObjectManager()->get('Magento\Framework\Registry');
         $registry->unregister('isSecureArea');
         $registry->register('isSecureArea', true);
 
@@ -147,7 +147,7 @@ class AccountManagementMeTest extends \Magento\TestFramework\TestCase\WebapiAbst
 
         $updatedCustomerData = $this->dataObjectProcessor->buildOutputDataArray(
             $customerData,
-            \Magento\Customer\Api\Data\CustomerInterface::class
+            'Magento\Customer\Api\Data\CustomerInterface'
         );
         $updatedCustomerData[CustomerInterface::LASTNAME] = $lastName . 'Updated';
         $updatedCustomerData[CustomerInterface::ID] = 25;
@@ -180,7 +180,7 @@ class AccountManagementMeTest extends \Magento\TestFramework\TestCase\WebapiAbst
         $customerData = $this->_getCustomerData($this->customerData[CustomerInterface::ID]);
         $expectedCustomerDetails = $this->dataObjectProcessor->buildOutputDataArray(
             $customerData,
-            \Magento\Customer\Api\Data\CustomerInterface::class
+            'Magento\Customer\Api\Data\CustomerInterface'
         );
         $expectedCustomerDetails['addresses'][0]['id'] =
             (int)$expectedCustomerDetails['addresses'][0]['id'];
@@ -228,21 +228,14 @@ class AccountManagementMeTest extends \Magento\TestFramework\TestCase\WebapiAbst
                 'token' => $this->token
             ]
         ];
-
-        $requestData = ['confirmationKey' => CustomerHelper::CONFIRMATION];
+        $requestData = ['confirmationKey' => $this->customerData[CustomerInterface::CONFIRMATION]];
         if (TESTS_WEB_API_ADAPTER === 'soap') {
             $requestData['customerId'] = 0;
         }
-
-        try {
-            $customerResponseData = $this->_webApiCall($serviceInfo, $requestData);
-            $this->assertEquals(
-                $this->customerData[CustomerInterface::ID],
-                $customerResponseData[CustomerInterface::ID]
-            );
-        } catch (\Exception $e) {
-            $this->fail('Customer is not activated.');
-        }
+        $customerResponseData = $this->_webApiCall($serviceInfo, $requestData);
+        $this->assertEquals($this->customerData[CustomerInterface::ID], $customerResponseData[CustomerInterface::ID]);
+        // Confirmation key is removed after confirmation
+        $this->assertFalse(isset($customerResponseData[CustomerInterface::CONFIRMATION]));
     }
 
     /**

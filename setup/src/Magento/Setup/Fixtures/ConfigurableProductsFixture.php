@@ -152,11 +152,6 @@ class ConfigurableProductsFixture extends Fixture
     private $swatchesGenerator;
 
     /**
-     * @var \Magento\Framework\Serialize\SerializerInterface
-     */
-    private $serializer;
-
-    /**
      * @param FixtureModel $fixtureModel
      * @param AttributeSet\AttributeSetFixture $attributeSetsFixture
      * @param AttributeSet\Pattern $attributePattern
@@ -169,7 +164,6 @@ class ConfigurableProductsFixture extends Fixture
      * @param WebsiteCategoryProvider $websiteCategoryProvider
      * @param PriceProvider $priceProvider
      * @param AttributeSet\SwatchesGenerator $swatchesGenerator
-     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -184,8 +178,7 @@ class ConfigurableProductsFixture extends Fixture
         CategoryResolver $categoryResolver,
         WebsiteCategoryProvider $websiteCategoryProvider,
         PriceProvider $priceProvider,
-        \Magento\Setup\Fixtures\AttributeSet\SwatchesGenerator $swatchesGenerator,
-        \Magento\Framework\Serialize\SerializerInterface $serializer
+        \Magento\Setup\Fixtures\AttributeSet\SwatchesGenerator $swatchesGenerator
     ) {
         parent::__construct($fixtureModel);
         $this->attributeSetsFixture = $attributeSetsFixture;
@@ -199,7 +192,6 @@ class ConfigurableProductsFixture extends Fixture
         $this->websiteCategoryProvider = $websiteCategoryProvider;
         $this->priceProvider = $priceProvider;
         $this->swatchesGenerator = $swatchesGenerator;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -659,7 +651,7 @@ class ConfigurableProductsFixture extends Fixture
      */
     private function getCustomAttributeSet(array $attributes)
     {
-        $attributeSetHash = crc32($this->serializer->serialize($attributes));
+        $attributeSetHash = crc32(json_encode($attributes));
         $attributeSetName = sprintf('Dynamic Attribute Set %s', $attributeSetHash);
 
         $pattern = $this->attributePattern->generateAttributeSet(
@@ -866,11 +858,10 @@ class ConfigurableProductsFixture extends Fixture
             $minAmountOfWordsDescription,
             $descriptionPrefix
         ) {
-            $countSearchTerms = is_array($searchTerms) ? count($searchTerms) : 0;
-            $count = !$searchTerms
+            $count = $searchTerms === null
                 ? 0
                 : round(
-                    $searchTerms[$index % $countSearchTerms]['count'] * (
+                    $searchTerms[$index % count($searchTerms)]['count'] * (
                         $configurableProductsCount / ($simpleProductsCount + $configurableProductsCount)
                     )
                 );
@@ -880,8 +871,8 @@ class ConfigurableProductsFixture extends Fixture
                 $maxAmountOfWordsDescription,
                 $descriptionPrefix . '-' . $index
             ) .
-            ($index <= ($count * $countSearchTerms) ? ' ' .
-            $searchTerms[$index % $countSearchTerms]['term'] : '');
+            ($index <= ($count * count($searchTerms)) ? ' ' .
+            $searchTerms[$index % count($searchTerms)]['term'] : '');
         };
     }
 

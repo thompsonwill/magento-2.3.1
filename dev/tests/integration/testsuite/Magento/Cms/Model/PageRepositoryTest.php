@@ -3,22 +3,22 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
 
 namespace Magento\Cms\Model;
 
 use Magento\Backend\Model\Auth;
 use Magento\Cms\Api\PageRepositoryInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\TestFramework\Helper\Bootstrap;
-use PHPUnit\Framework\TestCase;
-use Magento\TestFramework\Bootstrap as TestBootstrap;
+use Magento\Cms\Model\ResourceModel\Page\CollectionFactory as PageCollectionFactory;
 use Magento\Framework\Acl\Builder;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\TestFramework\Bootstrap as TestBootstrap;
+use Magento\TestFramework\Helper\Bootstrap;
+use Magento\Framework\Acl\CacheInterface;
 
 /**
  * Test class for page repository.
  */
-class PageRepositoryTest extends TestCase
+class PageRepositoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Test subject.
@@ -43,7 +43,19 @@ class PageRepositoryTest extends TestCase
     private $aclBuilder;
 
     /**
-     * @inheritdoc
+     * @var PageCollectionFactory
+     */
+    private $pageCollectionFactory;
+
+    /**
+     * @var CacheInterface
+     */
+    private $aclCache;
+
+    /**
+     * Sets up common objects.
+     *
+     * @inheritDoc
      */
     protected function setUp()
     {
@@ -51,6 +63,9 @@ class PageRepositoryTest extends TestCase
         $this->authorization = Bootstrap::getObjectManager()->get(Auth::class);
         $this->criteriaBuilder = Bootstrap::getObjectManager()->get(SearchCriteriaBuilder::class);
         $this->aclBuilder = Bootstrap::getObjectManager()->get(Builder::class);
+        $this->pageCollectionFactory = Bootstrap::getObjectManager()->get(PageCollectionFactory::class);
+        $this->aclCache = Bootstrap::getObjectManager()->get(CacheInterface::class);
+        $this->aclCache->clean();
     }
 
     /**
@@ -61,7 +76,6 @@ class PageRepositoryTest extends TestCase
         parent::tearDown();
 
         $this->authorization->logout();
-        $this->aclBuilder->resetRuntimeAcl();
     }
 
     /**
@@ -74,10 +88,10 @@ class PageRepositoryTest extends TestCase
      */
     public function testSaveDesign()
     {
-        $pages = $this->repository->getList(
-            $this->criteriaBuilder->addFilter('identifier', 'page_design_blank')->create()
-        )->getItems();
-        $page = array_pop($pages);
+        $pagesCollection = $this->pageCollectionFactory->create();
+        $pagesCollection->addFieldToFilter('identifier', ['eq' => 'page_design_blank']);
+        $page = $pagesCollection->getFirstItem();
+
         $this->authorization->login(TestBootstrap::ADMIN_NAME, TestBootstrap::ADMIN_PASSWORD);
 
         //Admin doesn't have access to page's design.

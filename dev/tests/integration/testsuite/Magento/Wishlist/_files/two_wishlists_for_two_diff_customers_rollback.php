@@ -3,7 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
 
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -29,7 +28,7 @@ try {
     $wishlist->loadByCustomerId($secondCustomer->getId());
     $wishlist->delete();
 } catch (NoSuchEntityException $e) {
-    /** Tests which are wrapped with MySQL transaction clear all data by transaction rollback. */
+    /** Tests which are wrapped with MySQL transaction clear all data by transaction rollback.*/
 }
 
 $registry->unregister('isSecureArea');

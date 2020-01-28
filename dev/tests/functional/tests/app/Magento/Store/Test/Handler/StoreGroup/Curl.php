@@ -49,30 +49,23 @@ class Curl extends AbstractCurl implements StoreGroupInterface
      */
     protected function getStoreGroupIdByGroupName($storeName)
     {
-        $url = $_ENV['app_backend_url'] . 'mui/index/render/';
-        $data = [
-            'namespace' => 'store_listing',
-            'filters' => [
-                'placeholder' => true,
-                'group_title' => $storeName,
-            ],
-            'paging' => [
-                'pageSize' => 1,
-            ]
-        ];
+        //Set pager limit to 2000 in order to find created store group by name
+        $url = $_ENV['app_backend_url'] . 'admin/system_store/index/sort/group_title/dir/asc/limit/2000';
         $curl = new BackendDecorator(new CurlTransport(), $this->_configuration);
-
-        $curl->write($url, $data, CurlInterface::POST);
+        $curl->addOption(CURLOPT_HEADER, 1);
+        $curl->write($url, [], CurlInterface::GET);
         $response = $curl->read();
-        $curl->close();
 
-        preg_match('/store_listing_data_source.+items.+"group_id":"(\d+)"/', $response, $match);
+        $expectedUrl = '/admin/system_store/editGroup/group_id/';
+        $expectedUrl = preg_quote($expectedUrl);
+        $expectedUrl = str_replace('/', '\/', $expectedUrl);
+        preg_match('/' . $expectedUrl . '([0-9]*)\/(.)*>' . $storeName . '<\/a>/', $response, $matches);
 
-        if (empty($match)) {
+        if (empty($matches)) {
             throw new \Exception('Cannot find store group id');
         }
 
-        return (int)$match[1];
+        return intval($matches[1]);
     }
 
     /**
@@ -91,7 +84,6 @@ class Curl extends AbstractCurl implements StoreGroupInterface
                 'root_category_id' => $categoryId,
                 'website_id' => $websiteId,
                 'group_id' => $fixture->hasData('group_id') ? $fixture->getGroupId() : '',
-                'code' => $fixture->hasData('code') ? $fixture->getCode() : '',
             ],
             'store_action' => 'add',
             'store_type' => 'group',

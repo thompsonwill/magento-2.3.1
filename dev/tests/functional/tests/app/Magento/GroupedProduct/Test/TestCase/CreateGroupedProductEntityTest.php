@@ -11,7 +11,6 @@ use Magento\Catalog\Test\Page\Adminhtml\CatalogProductIndex;
 use Magento\Catalog\Test\Page\Adminhtml\CatalogProductNew;
 use Magento\GroupedProduct\Test\Fixture\GroupedProduct;
 use Magento\Mtf\TestCase\Injectable;
-use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
 
 /**
  * Test Creation for CreateGroupedProductEntity
@@ -30,7 +29,7 @@ use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
  * 7. Save the Product.
  * 8. Perform assertions.
  *
- * @group Grouped_Product
+ * @group Grouped_Product_(MX)
  * @ZephyrId MAGETWO-24877
  */
 class CreateGroupedProductEntityTest extends Injectable
@@ -38,6 +37,7 @@ class CreateGroupedProductEntityTest extends Injectable
     /* tags */
     const TEST_TYPE = 'acceptance_test, extended_acceptance_test';
     const MVP = 'no';
+    const DOMAIN = 'MX';
     /* end tags */
 
     /**
@@ -53,11 +53,6 @@ class CreateGroupedProductEntityTest extends Injectable
      * @var CatalogProductNew
      */
     protected $catalogProductNew;
-
-    /**
-     * @var EnvWhitelist
-     */
-    private $envWhitelist;
 
     /**
      * Persist category
@@ -76,17 +71,14 @@ class CreateGroupedProductEntityTest extends Injectable
      *
      * @param CatalogProductIndex $catalogProductIndexNewPage
      * @param CatalogProductNew $catalogProductNewPage
-     * @param EnvWhitelist $envWhitelist
      * @return void
      */
     public function __inject(
         CatalogProductIndex $catalogProductIndexNewPage,
-        CatalogProductNew $catalogProductNewPage,
-        EnvWhitelist $envWhitelist
+        CatalogProductNew $catalogProductNewPage
     ) {
         $this->catalogProductIndex = $catalogProductIndexNewPage;
         $this->catalogProductNew = $catalogProductNewPage;
-        $this->envWhitelist = $envWhitelist;
     }
 
     /**
@@ -99,18 +91,9 @@ class CreateGroupedProductEntityTest extends Injectable
     public function test(GroupedProduct $product, Category $category)
     {
         //Steps
-        $this->envWhitelist->addHost('example.com');
         $this->catalogProductIndex->open();
         $this->catalogProductIndex->getGridPageActionBlock()->addProduct('grouped');
         $this->catalogProductNew->getProductForm()->fill($product, null, $category);
         $this->catalogProductNew->getFormPageActions()->save();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function tearDown()
-    {
-        $this->envWhitelist->removeHost('example.com');
     }
 }

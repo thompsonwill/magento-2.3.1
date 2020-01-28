@@ -7,12 +7,12 @@
 /* Create attribute */
 /** @var $installer \Magento\Catalog\Setup\CategorySetup */
 $installer = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-    \Magento\Catalog\Setup\CategorySetup::class,
+    'Magento\Catalog\Setup\CategorySetup',
     ['resourceName' => 'catalog_setup']
 );
 /** @var $selectAttribute \Magento\Catalog\Model\ResourceModel\Eav\Attribute */
 $selectAttribute = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-    \Magento\Catalog\Model\ResourceModel\Eav\Attribute::class
+    'Magento\Catalog\Model\ResourceModel\Eav\Attribute'
 );
 $selectAttribute->setData(
     [
@@ -21,7 +21,6 @@ $selectAttribute->setData(
         'is_global' => 1,
         'frontend_input' => 'select',
         'is_filterable' => 1,
-        'is_user_defined' => 1,
         'option' => [
             'value' => ['option_0' => ['Option 1'], 'option_1' => ['Option 2']],
             'order' => ['option_0' => 1, 'option_1' => 2],
@@ -35,12 +34,12 @@ $installer->addAttributeToGroup('catalog_product', 'Default', 'General', $select
 
 /** @var $selectOptions \Magento\Eav\Model\ResourceModel\Entity\Attribute\Option\Collection */
 $selectOptions = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-    \Magento\Eav\Model\ResourceModel\Entity\Attribute\Option\Collection::class
+    'Magento\Eav\Model\ResourceModel\Entity\Attribute\Option\Collection'
 );
 $selectOptions->setAttributeFilter($selectAttribute->getId());
 
 $multiselectAttribute = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-    \Magento\Catalog\Model\ResourceModel\Eav\Attribute::class
+    'Magento\Catalog\Model\ResourceModel\Eav\Attribute'
 );
 $multiselectAttribute->setData(
     [
@@ -49,7 +48,6 @@ $multiselectAttribute->setData(
         'is_global' => 1,
         'frontend_input' => 'multiselect',
         'is_filterable' => 1,
-        'is_user_defined' => 1,
         'option' => [
             'value' => ['option_0' => ['Option 1'], 'option_1' => ['Option 2']],
             'order' => ['option_0' => 1, 'option_1' => 2],
@@ -63,16 +61,15 @@ $installer->addAttributeToGroup('catalog_product', 'Default', 'General', $multis
 
 /** @var $multiselectOptions \Magento\Eav\Model\ResourceModel\Entity\Attribute\Option\Collection */
 $multiselectOptions = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-    \Magento\Eav\Model\ResourceModel\Entity\Attribute\Option\Collection::class
+    'Magento\Eav\Model\ResourceModel\Entity\Attribute\Option\Collection'
 );
 $multiselectOptions->setAttributeFilter($multiselectAttribute->getId());
+
 
 /* Create simple products per each select(dropdown) option */
 foreach ($selectOptions as $option) {
     /** @var $product \Magento\Catalog\Model\Product */
-    $product = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-        \Magento\Catalog\Model\Product::class
-    );
+    $product = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create('Magento\Catalog\Model\Product');
     $product->setTypeId(
         \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
     )->setAttributeSetId(
@@ -96,7 +93,7 @@ foreach ($selectOptions as $option) {
     )->save();
 
     \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->get(
-        \Magento\Catalog\Model\Product\Action::class
+        'Magento\Catalog\Model\Product\Action'
     )->updateAttributes(
         [$product->getId()],
         [

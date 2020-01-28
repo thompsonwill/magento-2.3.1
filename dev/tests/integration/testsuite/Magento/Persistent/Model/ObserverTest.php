@@ -9,9 +9,10 @@ namespace Magento\Persistent\Model;
 use Magento\Customer\Model\Context;
 
 /**
+ * @magentoDataFixture Magento/Persistent/_files/persistent.php
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class ObserverTest extends \PHPUnit\Framework\TestCase
+class ObserverTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \Magento\Customer\Helper\View
@@ -29,6 +30,11 @@ class ObserverTest extends \PHPUnit\Framework\TestCase
     protected $customerRepository;
 
     /**
+     * @var \Magento\Persistent\Helper\Session
+     */
+    protected $_persistentSessionHelper;
+
+    /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
     protected $_objectManager;
@@ -39,6 +45,11 @@ class ObserverTest extends \PHPUnit\Framework\TestCase
     protected $_observer;
 
     /**
+     * @var \Magento\Customer\Model\Session
+     */
+    protected $_customerSession;
+
+    /**
      * @var \Magento\Checkout\Model\Session | \PHPUnit_Framework_MockObject_MockObject
      */
     protected $_checkoutSession;
@@ -47,23 +58,27 @@ class ObserverTest extends \PHPUnit\Framework\TestCase
     {
         $this->_objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 
+        $this->_customerSession = $this->_objectManager->get('Magento\Customer\Model\Session');
+
         $this->_customerViewHelper = $this->_objectManager->create(
-            \Magento\Customer\Helper\View::class
+            'Magento\Customer\Helper\View'
         );
         $this->_escaper = $this->_objectManager->create(
-            \Magento\Framework\Escaper::class
+            'Magento\Framework\Escaper'
         );
 
         $this->customerRepository = $this->_objectManager->create(
-            \Magento\Customer\Api\CustomerRepositoryInterface::class
+            'Magento\Customer\Api\CustomerRepositoryInterface'
         );
 
         $this->_checkoutSession = $this->getMockBuilder(
-            \Magento\Checkout\Model\Session::class
+            'Magento\Checkout\Model\Session'
         )->disableOriginalConstructor()->setMethods([])->getMock();
 
+        $this->_persistentSessionHelper = $this->_objectManager->create('Magento\Persistent\Helper\Session');
+
         $this->_observer = $this->_objectManager->create(
-            \Magento\Persistent\Model\Observer::class,
+            'Magento\Persistent\Model\Observer',
             [
                 'escaper' => $this->_escaper,
                 'customerViewHelper' => $this->_customerViewHelper,
@@ -74,21 +89,34 @@ class ObserverTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @magentoConfigFixture current_store persistent/options/enabled 1
+     * @magentoConfigFixture current_store persistent/options/remember_enabled 1
+     * @magentoConfigFixture current_store persistent/options/remember_default 1
      * @magentoAppArea frontend
      * @magentoAppIsolation enabled
      */
     public function testEmulateWelcomeBlock()
     {
+        $this->_customerSession->loginById(1);
+
         $httpContext = new \Magento\Framework\App\Http\Context();
         $httpContext->setValue(Context::CONTEXT_AUTH, 1, 1);
         $block = $this->_objectManager->create(
-            \Magento\Sales\Block\Reorder\Sidebar::class,
+            'Magento\Sales\Block\Reorder\Sidebar',
             [
                 'httpContext' => $httpContext
             ]
         );
         $this->_observer->emulateWelcomeBlock($block);
-
-        $this->assertEquals('&nbsp;', $block->getWelcome());
+        $customerName = $this->_escaper->escapeHtml(
+            $this->_customerViewHelper->getCustomerName(
+                $this->customerRepository->getById(
+                    $this->_persistentSessionHelper->getSession()->getCustomerId()
+                )
+            )
+        );
+        $translation = __('Welcome, %1!', $customerName);
+        $this->assertStringMatchesFormat('%A' . $translation . '%A', $block->getWelcome());
+        $this->_customerSession->logout();
     }
 }

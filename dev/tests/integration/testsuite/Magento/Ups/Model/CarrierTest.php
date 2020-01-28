@@ -8,18 +8,27 @@ namespace Magento\Ups\Model;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\Quote\Model\Quote\Address\RateRequestFactory;
 
-class CarrierTest extends \PHPUnit\Framework\TestCase
+/**
+ * UPS carrier test.
+ */
+class CarrierTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Carrier
      */
     private $carrier;
 
+    /**
+     * @inheritdoc
+     */
     protected function setUp()
     {
         $this->carrier = Bootstrap::getObjectManager()->create(Carrier::class);
     }
 
+    /**
+     * @return void
+     */
     public function testGetShipAcceptUrl()
     {
         $this->assertEquals('https://wwwcie.ups.com/ups.app/xml/ShipAccept', $this->carrier->getShipAcceptUrl());
@@ -29,12 +38,16 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
      * Test ship accept url for live site
      *
      * @magentoConfigFixture current_store carriers/ups/is_account_live 1
+     * @return void
      */
     public function testGetShipAcceptUrlLive()
     {
         $this->assertEquals('https://onlinetools.ups.com/ups.app/xml/ShipAccept', $this->carrier->getShipAcceptUrl());
     }
 
+    /**
+     * @return void
+     */
     public function testGetShipConfirmUrl()
     {
         $this->assertEquals('https://wwwcie.ups.com/ups.app/xml/ShipConfirm', $this->carrier->getShipConfirmUrl());
@@ -44,6 +57,7 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
      * Test ship accept url for live site
      *
      * @magentoConfigFixture current_store carriers/ups/is_account_live 1
+     * @return void
      */
     public function testGetShipConfirmUrlLive()
     {
@@ -68,12 +82,12 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
         $rateRequest->setPackageQty(1);
         $rateRequest->setPackageWeight(1);
         $rateRequest->setFreeMethodWeight(0);
-        $rateRequest->setLimitCarrier($this->carrier::CODE);
+        $rateRequest->setLimitCarrier(Carrier::CODE);
         $rateRequest->setFreeShipping(true);
 
         $rateResult = $this->carrier->collectRates($rateRequest);
         $result = $rateResult->asArray();
-        $methods = $result[$this->carrier::CODE]['methods'];
+        $methods = $result[Carrier::CODE]['methods'];
         $this->assertEquals(0, $methods['GND']['price']);
         $this->assertNotEquals(0, $methods['1DA']['price']);
     }

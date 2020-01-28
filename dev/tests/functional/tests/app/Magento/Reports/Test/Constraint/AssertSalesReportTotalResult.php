@@ -52,7 +52,7 @@ class AssertSalesReportTotalResult extends AbstractAssertSalesReportResult
     {
         $data = [];
         foreach ($salesResult as $key => $result) {
-            $data[$key] = (float)$result;
+            $data[$key] = floatval($result);
         }
 
         return $data;

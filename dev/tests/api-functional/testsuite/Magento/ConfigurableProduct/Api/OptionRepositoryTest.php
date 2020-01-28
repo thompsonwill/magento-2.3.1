@@ -5,6 +5,8 @@
  * See COPYING.txt for license details.
  */
 
+// @codingStandardsIgnoreFile
+
 namespace Magento\ConfigurableProduct\Api;
 
 class OptionRepositoryTest extends \Magento\TestFramework\TestCase\WebapiAbstract
@@ -74,6 +76,7 @@ class OptionRepositoryTest extends \Magento\TestFramework\TestCase\WebapiAbstrac
         $this->assertNotEmpty($option);
 
         $this->assertCount(2, $option['values']);
+
 
         foreach ($option['values'] as $value) {
             $this->assertTrue(is_array($value));

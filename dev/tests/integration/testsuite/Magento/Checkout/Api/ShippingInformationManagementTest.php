@@ -3,8 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
-
 namespace Magento\Checkout\Api;
 
 use Magento\Checkout\Api\Data\ShippingInformationInterface;
@@ -13,12 +11,11 @@ use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\TestFramework\Helper\Bootstrap;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Test ShippingInformationManagement API.
  */
-class ShippingInformationManagementTest extends TestCase
+class ShippingInformationManagementTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var ShippingInformationManagementInterface
@@ -64,7 +61,7 @@ class ShippingInformationManagementTest extends TestCase
      * @expectedException  \Magento\Framework\Exception\InputException
      * @expectedExceptionMessage Unable to save shipping information. Please check input data.
      */
-    public function testDifferentAddresses(bool $swapShipping)
+    public function testDifferentAddresses($swapShipping)
     {
         $cart = $this->cartRepo->getForCustomer(1);
         $otherCustomer = $this->customerRepo->get('customer_with_addresses@test.com');
@@ -95,7 +92,7 @@ class ShippingInformationManagementTest extends TestCase
     /**
      * @return array
      */
-    public function differentAddressesDataProvider(): array
+    public function differentAddressesDataProvider()
     {
         return [
             'Shipping address swap' => [true],

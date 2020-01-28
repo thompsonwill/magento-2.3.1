@@ -4,7 +4,7 @@
  * See COPYING.txt for license details.
  */
 
-$category = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(\Magento\Catalog\Model\Category::class);
+$category = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create('Magento\Catalog\Model\Category');
 $category->isObjectNew(true);
 $category->setId(
     333
@@ -15,7 +15,7 @@ $category->setId(
 )->setParentId(
     2
 )->setPath(
-    '1/2/333'
+    '1/2/3'
 )->setLevel(
     2
 )->setAvailableSortBy(
@@ -31,7 +31,7 @@ $category->setId(
 )->save();
 
 /** @var $product \Magento\Catalog\Model\Product */
-$product = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(\Magento\Catalog\Model\Product::class);
+$product = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create('Magento\Catalog\Model\Product');
 $product->setTypeId(
     \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
 )->setId(

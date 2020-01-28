@@ -4,12 +4,14 @@
  * See COPYING.txt for license details.
  */
 
+// @codingStandardsIgnoreFile
+
 /**
  * Test for abstract export model
  */
 namespace Magento\ImportExport\Model\Export;
 
-class EntityAbstractTest extends \PHPUnit\Framework\TestCase
+class EntityAbstractTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \Magento\ImportExport\Model\Export\AbstractEntity
@@ -23,12 +25,12 @@ class EntityAbstractTest extends \PHPUnit\Framework\TestCase
         /** @var \Magento\TestFramework\ObjectManager  $objectManager */
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->_model = $this->getMockForAbstractClass(
-            \Magento\ImportExport\Model\Export\AbstractEntity::class,
+            'Magento\ImportExport\Model\Export\AbstractEntity',
             [
-                $objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class),
-                $objectManager->get(\Magento\Store\Model\StoreManager::class),
-                $objectManager->get(\Magento\ImportExport\Model\Export\Factory::class),
-                $objectManager->get(\Magento\ImportExport\Model\ResourceModel\CollectionByPagesIteratorFactory::class)
+                $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface'),
+                $objectManager->get('Magento\Store\Model\StoreManager'),
+                $objectManager->get('Magento\ImportExport\Model\Export\Factory'),
+                $objectManager->get('Magento\ImportExport\Model\ResourceModel\CollectionByPagesIteratorFactory')
             ]
         );
     }
@@ -56,10 +58,10 @@ class EntityAbstractTest extends \PHPUnit\Framework\TestCase
     {
         $this->_model->setWriter(
             \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-                \Magento\ImportExport\Model\Export\Adapter\Csv::class
+                'Magento\ImportExport\Model\Export\Adapter\Csv'
             )
         );
-        $this->assertInstanceOf(\Magento\ImportExport\Model\Export\Adapter\Csv::class, $this->_model->getWriter());
+        $this->assertInstanceOf('Magento\ImportExport\Model\Export\Adapter\Csv', $this->_model->getWriter());
     }
 
     /**
@@ -78,7 +80,7 @@ class EntityAbstractTest extends \PHPUnit\Framework\TestCase
     public function testFilterAttributeCollection()
     {
         $collection = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-            \Magento\Customer\Model\ResourceModel\Attribute\Collection::class
+            'Magento\Customer\Model\ResourceModel\Attribute\Collection'
         );
         $collection = $this->_model->filterAttributeCollection($collection);
         /**
@@ -100,11 +102,10 @@ class EntityAbstractTest extends \PHPUnit\Framework\TestCase
     }
 }
 /**
- * @codingStandardsIgnoreStart
  * Stub abstract class which provide to change protected property "$_disabledAttrs" and test methods depended on it
  */
-abstract class Stub_Magento_ImportExport_Model_Export_AbstractEntity extends
-    \Magento\ImportExport\Model\Export\AbstractEntity
+abstract class Stub_Magento_ImportExport_Model_Export_AbstractEntity
+    extends \Magento\ImportExport\Model\Export\AbstractEntity
 {
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -117,4 +118,3 @@ abstract class Stub_Magento_ImportExport_Model_Export_AbstractEntity extends
         $this->_disabledAttrs = ['default_billing', 'default_shipping'];
     }
 }
-// @codingStandardsIgnoreEnd

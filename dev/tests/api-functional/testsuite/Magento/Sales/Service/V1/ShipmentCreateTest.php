@@ -4,6 +4,8 @@
  * See COPYING.txt for license details.
  */
 
+// @codingStandardsIgnoreFile
+
 namespace Magento\Sales\Service\V1;
 
 use Magento\TestFramework\TestCase\WebapiAbstract;
@@ -28,14 +30,13 @@ class ShipmentCreateTest extends WebapiAbstract
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
     }
-
     /**
      * @magentoApiDataFixture Magento/Sales/_files/order.php
      */
     public function testInvoke()
     {
         /** @var \Magento\Sales\Model\Order $order */
-        $order = $this->objectManager->create(\Magento\Sales\Model\Order::class)->loadByIncrementId('100000001');
+        $order = $this->objectManager->create('Magento\Sales\Model\Order')->loadByIncrementId('100000001');
         $orderItem = current($order->getAllItems());
         $items = [
             [

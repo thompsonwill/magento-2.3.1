@@ -11,9 +11,8 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 /**
  *
  * @SuppressWarnings(PHPMD.LongVariable)
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class StorageTest extends \PHPUnit\Framework\TestCase
+class StorageTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var string
@@ -62,16 +61,6 @@ class StorageTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @inheritdoc
-     */
-    public function setUp()
-    {
-        $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
-        $this->filesystem = $this->objectManager->get(\Magento\Framework\Filesystem::class);
-        $this->storage = $this->objectManager->create(\Magento\Cms\Model\Wysiwyg\Images\Storage::class);
-    }
-
-    /**
      * @return void
      */
     public function testDeleteDirectory()
@@ -97,6 +86,17 @@ class StorageTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @inheritdoc
+     */
+    protected function setUp()
+    {
+        $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
+        $this->filesystem = $this->objectManager->get(\Magento\Framework\Filesystem::class);
+        $this->storage = $this->objectManager->create(\Magento\Cms\Model\Wysiwyg\Images\Storage::class);
+    }
+
+    /**
+     * @return void
      * @magentoAppIsolation enabled
      */
     public function testGetFilesCollection()
@@ -112,11 +112,13 @@ class StorageTest extends \PHPUnit\Framework\TestCase
                 'http://%s/static/%s/adminhtml/%s/%s/Magento_Cms/images/placeholder_thumbnail.jpg',
                 $item->getThumbUrl()
             );
+
             return;
         }
     }
 
     /**
+     * @return void
      * @magentoAppArea adminhtml
      */
     public function testGetThumbsPath()
@@ -182,7 +184,7 @@ class StorageTest extends \PHPUnit\Framework\TestCase
      * @expectedException \Magento\Framework\Exception\LocalizedException
      * @expectedExceptionMessage File validation failed.
      */
-    public function testUploadFileWithWrongExtension(string $fileName, string $fileType, $storageType = null)
+    public function testUploadFileWithWrongExtension($fileName, $fileType, $storageType = null)
     {
         $fileName = 'text.txt';
         $tmpDirectory = $this->filesystem->getDirectoryWrite(\Magento\Framework\App\Filesystem\DirectoryList::SYS_TMP);
@@ -201,7 +203,6 @@ class StorageTest extends \PHPUnit\Framework\TestCase
             'size' => 12500,
         ];
 
-        $this->storage->uploadFile(self::$_baseDir);
         $this->storage->uploadFile(self::$_baseDir, $storageType);
         $this->assertFalse(is_file(self::$_baseDir . DIRECTORY_SEPARATOR . $fileName));
     }
@@ -209,7 +210,7 @@ class StorageTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function testUploadFileWithWrongExtensionDataProvider(): array
+    public function testUploadFileWithWrongExtensionDataProvider()
     {
         return [
             [
@@ -225,6 +226,7 @@ class StorageTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @return void
      * @expectedException \Magento\Framework\Exception\LocalizedException
      * @expectedExceptionMessage File validation failed.
      */

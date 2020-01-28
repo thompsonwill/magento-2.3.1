@@ -3,18 +3,15 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
-
 namespace Magento\Customer\Controller\Adminhtml\Index;
 
-use Magento\Backend\Model\Session;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
-use PHPUnit\Framework\Constraint\Constraint;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Message\MessageInterface;
 use Magento\TestFramework\Helper\Bootstrap;
-use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\TestFramework\TestCase\AbstractBackendController;
+use PHPUnit_Framework_Constraint;
 
 /**
  * @magentoAppArea adminhtml
@@ -33,9 +30,6 @@ class MassDeleteTest extends AbstractBackendController
      */
     private $baseControllerUrl = 'http://localhost/index.php/backend/customer/index/index';
 
-    /**
-     * @inheritDoc
-     */
     protected function setUp()
     {
         parent::setUp();
@@ -43,32 +37,16 @@ class MassDeleteTest extends AbstractBackendController
     }
 
     /**
-     * @inheritDoc
-     */
-    protected function tearDown()
-    {
-        /**
-         * Unset customer data
-         */
-        Bootstrap::getObjectManager()->get(Session::class)->setCustomerData(null);
-
-        /**
-         * Unset messages
-         */
-        Bootstrap::getObjectManager()->get(Session::class)->getMessages(true);
-    }
-
-    /**
      * Validates failure attempts to delete customers from grid.
      *
      * @param array|null $ids
-     * @param Constraint $constraint
+     * @param \PHPUnit_Framework_Constraint $constraint
      * @param string|null $messageType
      * @magentoDataFixture Magento/Customer/_files/five_repository_customers.php
      * @magentoDbIsolation disabled
      * @dataProvider failedRequestDataProvider
      */
-    public function testFailedMassDeleteAction($ids, Constraint $constraint, $messageType)
+    public function testFailedMassDeleteAction($ids, PHPUnit_Framework_Constraint $constraint, $messageType)
     {
         $this->massDeleteAssertions($ids, $constraint, $messageType);
     }
@@ -77,39 +55,45 @@ class MassDeleteTest extends AbstractBackendController
      * Validates success attempt to delete customer from grid.
      *
      * @param array $emails
-     * @param Constraint $constraint
+     * @param PHPUnit_Framework_Constraint $constraint
      * @param string $messageType
      * @magentoDataFixture Magento/Customer/_files/five_repository_customers.php
      * @magentoDbIsolation disabled
      * @dataProvider successRequestDataProvider
      */
-    public function testSuccessMassDeleteAction(array $emails, Constraint $constraint, string $messageType)
+    public function testSuccessMassDeleteAction(array $emails, PHPUnit_Framework_Constraint $constraint, $messageType)
     {
-        $ids = [];
-        foreach ($emails as $email) {
-            /** @var CustomerInterface $customer */
-            $customer = $this->customerRepository->get($email);
-            $ids[] = $customer->getId();
-        }
+        try {
+            $ids = [];
+            foreach ($emails as $email) {
+                /** @var CustomerInterface $customer */
+                $customer = $this->customerRepository->get($email);
+                $ids[] = $customer->getId();
+            }
 
-        $this->massDeleteAssertions(
-            $ids,
-            $constraint,
-            $messageType
-        );
+            $this->massDeleteAssertions(
+                $ids,
+                $constraint,
+                $messageType
+            );
+        } catch (LocalizedException $e) {
+            self::fail($e->getMessage());
+        }
     }
 
     /**
      * Performs required request and assertions.
      *
      * @param array|null $ids
-     * @param Constraint $constraint
+     * @param PHPUnit_Framework_Constraint $constraint
      * @param string|null $messageType
      */
-    private function massDeleteAssertions($ids, Constraint $constraint, $messageType)
+    private function massDeleteAssertions($ids, PHPUnit_Framework_Constraint $constraint, $messageType)
     {
         /** @var \Magento\Framework\Data\Form\FormKey $formKey */
-        $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+        $formKey = $this->_objectManager->get(
+            \Magento\Framework\Data\Form\FormKey::class
+        );
 
         $requestData = [
             'selected' => $ids,
@@ -117,7 +101,9 @@ class MassDeleteTest extends AbstractBackendController
             'form_key' => $formKey->getFormKey()
         ];
 
-        $this->getRequest()->setParams($requestData)->setMethod(HttpRequest::METHOD_POST);
+        $this->getRequest()
+            ->setParams($requestData)
+            ->setMethod('POST');
         $this->dispatch('backend/customer/index/massDelete');
         $this->assertSessionMessages(
             $constraint,
@@ -131,7 +117,7 @@ class MassDeleteTest extends AbstractBackendController
      *
      * @return array
      */
-    public function failedRequestDataProvider(): array
+    public function failedRequestDataProvider()
     {
         return [
             [
@@ -157,7 +143,7 @@ class MassDeleteTest extends AbstractBackendController
      *
      * @return array
      */
-    public function successRequestDataProvider(): array
+    public function successRequestDataProvider()
     {
         return [
             [
@@ -171,5 +157,18 @@ class MassDeleteTest extends AbstractBackendController
                 'messageType' => MessageInterface::TYPE_SUCCESS,
             ],
         ];
+    }
+
+    protected function tearDown()
+    {
+        /**
+         * Unset customer data
+         */
+        Bootstrap::getObjectManager()->get(\Magento\Backend\Model\Session::class)->setCustomerData(null);
+
+        /**
+         * Unset messages
+         */
+        Bootstrap::getObjectManager()->get(\Magento\Backend\Model\Session::class)->getMessages(true);
     }
 }

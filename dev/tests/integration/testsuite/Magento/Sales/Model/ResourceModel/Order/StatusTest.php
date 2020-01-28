@@ -4,6 +4,8 @@
  * See COPYING.txt for license details.
  */
 
+// @codingStandardsIgnoreFile
+
 namespace Magento\Sales\Model\ResourceModel\Order;
 
 use Magento\TestFramework\Helper\Bootstrap;
@@ -11,7 +13,7 @@ use Magento\TestFramework\Helper\Bootstrap;
 /**
  * Class StatusTest
  */
-class StatusTest extends \PHPUnit\Framework\TestCase
+class StatusTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\Status
@@ -25,7 +27,7 @@ class StatusTest extends \PHPUnit\Framework\TestCase
     {
         $this->resourceModel = Bootstrap::getObjectManager()
             ->create(
-                \Magento\Sales\Model\ResourceModel\Order\Status::class,
+                'Magento\Sales\Model\ResourceModel\Order\Status',
                 [
                     'data' => ['status' => 'fake_status']
                 ]

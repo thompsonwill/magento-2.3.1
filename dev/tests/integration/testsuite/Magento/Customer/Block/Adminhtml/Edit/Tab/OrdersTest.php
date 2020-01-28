@@ -6,7 +6,6 @@
 namespace Magento\Customer\Block\Adminhtml\Edit\Tab;
 
 use Magento\Customer\Controller\RegistryConstants;
-use Magento\Framework\Escaper;
 use Magento\TestFramework\Helper\Bootstrap;
 
 /**
@@ -14,7 +13,7 @@ use Magento\TestFramework\Helper\Bootstrap;
  *
  * @magentoAppArea adminhtml
  */
-class OrdersTest extends \PHPUnit\Framework\TestCase
+class OrdersTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * The orders block under test.
@@ -31,30 +30,24 @@ class OrdersTest extends \PHPUnit\Framework\TestCase
     private $coreRegistry;
 
     /**
-     * @var Escaper
-     */
-    private $escaper;
-
-    /**
      * Execute per test initialization.
      */
     public function setUp()
     {
         $objectManager = Bootstrap::getObjectManager();
-        $objectManager->get(\Magento\Framework\App\State::class)->setAreaCode('adminhtml');
+        $objectManager->get('Magento\Framework\App\State')->setAreaCode('adminhtml');
 
-        $this->coreRegistry = $objectManager->get(\Magento\Framework\Registry::class);
+        $this->coreRegistry = $objectManager->get('Magento\Framework\Registry');
         $this->coreRegistry->register(RegistryConstants::CURRENT_CUSTOMER_ID, 1);
 
         $this->block = $objectManager->get(
-            \Magento\Framework\View\LayoutInterface::class
+            'Magento\Framework\View\LayoutInterface'
         )->createBlock(
-            \Magento\Customer\Block\Adminhtml\Edit\Tab\Orders::class,
+            'Magento\Customer\Block\Adminhtml\Edit\Tab\Orders',
             '',
             ['coreRegistry' => $this->coreRegistry]
         );
         $this->block->getPreparedCollection();
-        $this->escaper = $objectManager->get(Escaper::class);
     }
 
     /**
@@ -88,9 +81,6 @@ class OrdersTest extends \PHPUnit\Framework\TestCase
      */
     public function testToHtml()
     {
-        $this->assertContains(
-            $this->escaper->escapeHtml("We couldn't find any records."),
-            $this->block->toHtml()
-        );
+        $this->assertContains("We couldn't find any records.", $this->block->toHtml());
     }
 }

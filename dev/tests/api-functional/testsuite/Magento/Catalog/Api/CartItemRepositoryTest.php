@@ -31,12 +31,12 @@ class CartItemRepositoryTest extends WebapiAbstract
      */
     public function testAddProductToCartWithCustomOptions()
     {
-        $productRepository = $this->objectManager->create(\Magento\Catalog\Api\ProductRepositoryInterface::class);
+        $productRepository = $this->objectManager->create('Magento\Catalog\Api\ProductRepositoryInterface');
         /** @var \Magento\Catalog\Api\Data\ProductInterface $product */
         $product = $productRepository->get(self::SIMPLE_PRODUCT_SKU);
 
         /** @var \Magento\Quote\Model\Quote $quote */
-        $quote = $this->objectManager->create(\Magento\Quote\Model\Quote::class);
+        $quote = $this->objectManager->create('Magento\Quote\Model\Quote');
         $quote->load('test_order_1', 'reserved_order_id');
         $cartId = $quote->getId();
 
@@ -70,7 +70,6 @@ class CartItemRepositoryTest extends WebapiAbstract
                         'custom_options' => $this->getOptions(),
                     ],
                 ],
-                'price' => $item->getPrice(),
             ],
             $response
         );
@@ -82,7 +81,7 @@ class CartItemRepositoryTest extends WebapiAbstract
     public function testGetList()
     {
         /** @var \Magento\Quote\Model\Quote  $quote */
-        $quote = $this->objectManager->create(\Magento\Quote\Model\Quote::class);
+        $quote = $this->objectManager->create('Magento\Quote\Model\Quote');
         $quote->load('test_order_1', 'reserved_order_id');
         $cartId = $quote->getId();
 
@@ -120,7 +119,7 @@ class CartItemRepositoryTest extends WebapiAbstract
     protected function getOptions()
     {
         /** @var \Magento\Catalog\Api\ProductRepositoryInterface $productRepository */
-        $productRepository = $this->objectManager->create(\Magento\Catalog\Api\ProductRepositoryInterface::class);
+        $productRepository = $this->objectManager->create('Magento\Catalog\Api\ProductRepositoryInterface');
         $product = $productRepository->get(self::SIMPLE_PRODUCT_SKU);
         $options = [];
         /** @var ProductCustomOptionInterface $option */

@@ -8,9 +8,8 @@
  */
 -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.2/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
          colors="true"
-         beStrictAboutTestsThatDoNotTestAnything="false"
          bootstrap="./framework/bootstrap.php"
 >
     <!-- Test suites definition -->
@@ -36,7 +35,7 @@
         <!-- WebSerivice Type. Possible values: soap, rest -->
         <const name="TESTS_WEB_API_ADAPTER" value="rest"/>
         <!-- Webserver URL -->
-        <const name="TESTS_BASE_URL" value="http://magento.url"/>
+        <const name="TESTS_BASE_URL" value="http://magento-ee.localhost"/>
         <!-- Webserver API user -->
         <const name="TESTS_WEBSERVICE_USER" value="admin"/>
         <!-- Webserver API key -->
@@ -64,61 +63,5 @@
     <!-- Test listeners -->
     <listeners>
         <listener class="Magento\TestFramework\Event\PhpUnit"/>
-        <listener class="Yandex\Allure\Adapter\AllureAdapter">
-            <arguments>
-                <string>var/allure-results</string> <!-- XML files output folder -->
-                <boolean>true</boolean> <!-- Whether to delete previous results on rerun -->
-                <array> <!-- A list of custom annotations to ignore (optional) -->
-                    <element key="codingStandardsIgnoreFile">
-                        <string>codingStandardsIgnoreFile</string>
-                    </element>
-                    <element key="codingStandardsIgnoreStart">
-                        <string>codingStandardsIgnoreStart</string>
-                    </element>
-                    <element key="codingStandardsIgnoreEnd">
-                        <string>codingStandardsIgnoreEnd</string>
-                    </element>
-                    <element key="expectedExceptionMessageRegExp">
-                        <string>expectedExceptionMessageRegExp</string>
-                    </element>
-                    <element key="magentoAdminConfigFixture">
-                        <string>magentoAdminConfigFixture</string>
-                    </element>
-                    <element key="magentoAppArea">
-                        <string>magentoAppArea</string>
-                    </element>
-                    <element key="magentoAppIsolation">
-                        <string>magentoAppIsolation</string>
-                    </element>
-                    <element key="magentoCache">
-                        <string>magentoCache</string>
-                    </element>
-                    <element key="magentoComponentsDir">
-                        <string>magentoComponentsDir</string>
-                    </element>
-                    <element key="magentoConfigFixture">
-                        <string>magentoConfigFixture</string>
-                    </element>
-                    <element key="magentoDataFixture">
-                        <string>magentoDataFixture</string>
-                    </element>
-                    <element key="magentoDataFixtureBeforeTransaction">
-                        <string>magentoDataFixtureBeforeTransaction</string>
-                    </element>
-                    <element key="magentoDbIsolation">
-                        <string>magentoDbIsolation</string>
-                    </element>
-                    <element key="magentoIndexerDimensionMode">
-                        <string>magentoIndexerDimensionMode</string>
-                    </element>
-                    <element key="magentoApiDataFixture">
-                        <string>magentoApiDataFixture</string>
-                    </element>
-                    <element key="Override">
-                        <string>Override</string>
-                    </element>
-                </array>
-            </arguments>
-        </listener>
     </listeners>
 </phpunit>

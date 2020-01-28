@@ -4,6 +4,8 @@
  * See COPYING.txt for license details.
  */
 
+// @codingStandardsIgnoreFile
+
 namespace Magento\Catalog\Controller\Product;
 
 use Magento\Framework\Message\MessageInterface;
@@ -11,9 +13,6 @@ use Magento\Framework\App\Request\Http as HttpRequest;
 
 /**
  * @magentoDataFixture Magento/Catalog/controllers/_files/products.php
- *
- * @magentoDbIsolation disabled
- *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
@@ -57,12 +56,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
         );
 
         $this->assertSessionMessages(
-            $this->equalTo(
-                [
-                    'You added product Simple Product 1 Name to the '.
-                    '<a href="http://localhost/index.php/catalog/product_compare/">comparison list</a>.'
-                ]
-            ),
+            $this->equalTo(['You added product Simple Product 1 Name to the comparison list.']),
             MessageInterface::TYPE_SUCCESS
         );
 
@@ -107,7 +101,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
         $product = $this->productRepository->get('simple_product_2');
         $this->dispatch('catalog/product_compare/index/items/' . $product->getEntityId());
 
-        $this->assertRedirect($this->stringStartsWith('http://localhost/index.php/catalog/product_compare/index/'));
+        $this->assertRedirect($this->equalTo('http://localhost/index.php/catalog/product_compare/index/'));
 
         $this->_assertCompareListEquals([$product->getEntityId()]);
     }
@@ -255,7 +249,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
      * @param string $sku
      * @return \Magento\Catalog\Api\Data\ProductInterface
      */
-    private function setProductDisabled(string $sku): \Magento\Catalog\Api\Data\ProductInterface
+    private function setProductDisabled($sku)
     {
         $product = $this->productRepository->get($sku);
         $product->setStatus(\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED)

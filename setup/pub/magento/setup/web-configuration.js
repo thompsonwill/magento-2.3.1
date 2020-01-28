@@ -5,7 +5,9 @@
 
 'use strict';
 angular.module('web-configuration', ['ngStorage'])
-    .controller('webConfigurationController', ['$scope', '$state', '$localStorage', '$http', function ($scope, $state, $localStorage, $http) {
+    .controller(
+        'webConfigurationController',
+        ['$scope', '$state', '$localStorage', '$http', function ($scope, $state, $localStorage, $http) {
         $scope.config = {
             address: {
                 base_url: '',
@@ -68,12 +70,12 @@ angular.module('web-configuration', ['ngStorage'])
 
         $scope.$watch('config.address.base_url', function() {
             if (angular.equals($scope.config.https.text, '') || angular.isUndefined($scope.config.https.text)) {
-                $scope.config.https.text = $scope.config.address.base_url.replace('http://', 'https://');
+                $scope.config.https.text = $scope.config.address.base_url.replace('http', 'https');
             }
         });
 
         $scope.populateHttps = function() {
-            $scope.config.https.text = $scope.config.address.base_url.replace('http://', 'https://');
+            $scope.config.https.text = $scope.config.address.base_url.replace('http', 'https');
         };
 
         $scope.showEncryptKey = function() {
@@ -126,6 +128,7 @@ angular.module('web-configuration', ['ngStorage'])
                 $http.post('index.php/url-check', $scope.config)
                     .then(function successCallback(resp) {
                         $scope.validateUrl.result = resp.data;
+
                         if ($scope.validateUrl.result.successUrl && $scope.validateUrl.result.successSecureUrl) {
                             $scope.nextState();
                         }

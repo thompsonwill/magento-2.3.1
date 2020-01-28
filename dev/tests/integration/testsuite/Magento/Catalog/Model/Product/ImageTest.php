@@ -4,13 +4,15 @@
  * See COPYING.txt for license details.
  */
 
+// @codingStandardsIgnoreFile
+
 namespace Magento\Catalog\Model\Product;
 
 /**
  * Class \Magento\Catalog\Model\Product\ImageTest
  * @magentoAppArea frontend
  */
-class ImageTest extends \PHPUnit\Framework\TestCase
+class ImageTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @return \Magento\Catalog\Model\Product\Image
@@ -19,18 +21,10 @@ class ImageTest extends \PHPUnit\Framework\TestCase
     {
         /** @var $model \Magento\Catalog\Model\Product\Image */
         $model = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-            \Magento\Catalog\Model\Product\Image::class
+            'Magento\Catalog\Model\Product\Image'
         );
-        /** @var \Magento\Catalog\Model\View\Asset\Placeholder $defaultPlaceholder */
-        $defaultPlaceholder = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-            ->create(
-                \Magento\Catalog\Model\View\Asset\Placeholder::class,
-                ['type' => 'image']
-            );
-
-        $model->setDestinationSubdir('image');
-        $model->setBaseFile('');
-        $this->assertEquals($defaultPlaceholder->getSourceFile(), $model->getBaseFile());
+        $model->setDestinationSubdir('image')->setBaseFile('');
+        $this->assertEmpty($model->getBaseFile());
         return $model;
     }
 
@@ -40,7 +34,7 @@ class ImageTest extends \PHPUnit\Framework\TestCase
      */
     public function testSaveFilePlaceholder($model)
     {
-        $processor = $this->createPartialMock(\Magento\Framework\Image::class, ['save']);
+        $processor = $this->getMock('Magento\Framework\Image', ['save'], [], '', false);
         $processor->expects($this->exactly(0))->method('save');
         $model->setImageProcessor($processor)->saveFile();
     }
@@ -63,7 +57,7 @@ class ImageTest extends \PHPUnit\Framework\TestCase
         $expectedFile = '/somewhere/watermark.png';
 
         /** @var \Magento\Framework\View\FileSystem|\PHPUnit_Framework_MockObject_MockObject $viewFilesystem */
-        $viewFileSystem = $this->createMock(\Magento\Framework\View\FileSystem::class);
+        $viewFileSystem = $this->getMock('Magento\Framework\View\FileSystem', [], [], '', false);
         $viewFileSystem->expects($this->once())
             ->method('getStaticFileName')
             ->with($inputFile)
@@ -71,15 +65,13 @@ class ImageTest extends \PHPUnit\Framework\TestCase
 
         /** @var $model \Magento\Catalog\Model\Product\Image */
         $model = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-            ->create(\Magento\Catalog\Model\Product\Image::class, ['viewFileSystem' => $viewFileSystem]);
-        $processor = $this->createPartialMock(
-            \Magento\Framework\Image::class,
-            [
-                'save', 'keepAspectRatio', 'keepFrame', 'keepTransparency', 'constrainOnly', 'backgroundColor',
-                'quality', 'setWatermarkPosition', 'setWatermarkImageOpacity', 'setWatermarkWidth',
-                'setWatermarkHeight', 'watermark',
-            ]
-        );
+            ->create('Magento\Catalog\Model\Product\Image', ['viewFileSystem' => $viewFileSystem]);
+        $processor = $this->getMock(
+            'Magento\Framework\Image',
+            ['save', 'keepAspectRatio', 'keepFrame', 'keepTransparency', 'constrainOnly', 'backgroundColor', 'quality',
+                'setWatermarkPosition', 'setWatermarkImageOpacity', 'setWatermarkWidth', 'setWatermarkHeight',
+                'watermark'],
+            [], '', false);
         $processor->expects($this->once())
             ->method('watermark')
             ->with($expectedFile);

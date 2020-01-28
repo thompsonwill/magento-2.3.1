@@ -3,14 +3,13 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
-
 namespace Magento\Customer\Controller\Adminhtml\Index;
 
 use Magento\Backend\Model\Session;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Customer\Api\Data\CustomerInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Message\MessageInterface;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\TestFramework\TestCase\AbstractBackendController;
@@ -66,31 +65,38 @@ class MassAssignGroupTest extends AbstractBackendController
     public function testMassAssignGroupAction()
     {
         $customerEmail = 'customer1@example.com';
-        /** @var CustomerInterface $customer */
-        $customer = $this->customerRepository->get($customerEmail);
-        $this->assertEquals(1, $customer->getGroupId());
+        try {
+            /** @var CustomerInterface $customer */
+            $customer = $this->customerRepository->get($customerEmail);
+            $this->assertEquals(1, $customer->getGroupId());
 
-        /** @var \Magento\Framework\Data\Form\FormKey $formKey */
-        $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+            /** @var \Magento\Framework\Data\Form\FormKey $formKey */
+            $formKey = $this->_objectManager->get(
+                \Magento\Framework\Data\Form\FormKey::class
+            );
 
-        $params = [
-            'group' => 0,
-            'namespace' => 'customer_listing',
-            'selected' => [$customer->getId()],
-            'form_key' => $formKey->getFormKey()
-        ];
+            $params = [
+                'group' => 0,
+                'namespace' => 'customer_listing',
+                'selected' => [$customer->getId()],
+                'form_key' => $formKey->getFormKey()
+            ];
 
-        $this->getRequest()->setParams($params)
-            ->setMethod(HttpRequest::METHOD_POST);
-        $this->dispatch('backend/customer/index/massAssignGroup');
-        $this->assertSessionMessages(
-            self::equalTo(['A total of 1 record(s) were updated.']),
-            MessageInterface::TYPE_SUCCESS
-        );
-        $this->assertRedirect($this->stringStartsWith($this->baseControllerUrl));
+            $this->getRequest()
+                ->setParams($params)
+                ->setMethod(HttpRequest::METHOD_POST);
+            $this->dispatch('backend/customer/index/massAssignGroup');
+            $this->assertSessionMessages(
+                self::equalTo(['A total of 1 record(s) were updated.']),
+                MessageInterface::TYPE_SUCCESS
+            );
+            $this->assertRedirect($this->stringStartsWith($this->baseControllerUrl));
 
-        $customer = $this->customerRepository->get($customerEmail);
-        $this->assertEquals(0, $customer->getGroupId());
+            $customer = $this->customerRepository->get($customerEmail);
+            $this->assertEquals(0, $customer->getGroupId());
+        } catch (LocalizedException $e) {
+            self::fail($e->getMessage());
+        }
     }
 
     /**
@@ -104,12 +110,19 @@ class MassAssignGroupTest extends AbstractBackendController
         $ids = [];
         for ($i = 1; $i <= 5; $i++) {
             /** @var CustomerInterface $customer */
-            $customer = $this->customerRepository->get('customer' . $i . '@example.com');
-            $this->assertEquals(1, $customer->getGroupId());
-            $ids[] = $customer->getId();
+            try {
+                $customer = $this->customerRepository->get('customer'.$i.'@example.com');
+                $this->assertEquals(1, $customer->getGroupId());
+                $ids[] = $customer->getId();
+            } catch (\Exception $e) {
+                self::fail($e->getMessage());
+            }
         }
+
         /** @var \Magento\Framework\Data\Form\FormKey $formKey */
-        $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+        $formKey = $this->_objectManager->get(
+            \Magento\Framework\Data\Form\FormKey::class
+        );
 
         $params = [
             'group' => 0,
@@ -118,7 +131,8 @@ class MassAssignGroupTest extends AbstractBackendController
             'form_key' => $formKey->getFormKey()
         ];
 
-        $this->getRequest()->setParams($params)
+        $this->getRequest()
+            ->setParams($params)
             ->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('backend/customer/index/massAssignGroup');
         $this->assertSessionMessages(
@@ -127,9 +141,13 @@ class MassAssignGroupTest extends AbstractBackendController
         );
         $this->assertRedirect($this->stringStartsWith($this->baseControllerUrl));
         for ($i = 1; $i < 5; $i++) {
-            /** @var CustomerInterface $customer */
-            $customer = $this->customerRepository->get('customer' . $i . '@example.com');
-            $this->assertEquals(0, $customer->getGroupId());
+            try {
+                /** @var CustomerInterface $customer */
+                $customer = $this->customerRepository->get('customer'.$i.'@example.com');
+                $this->assertEquals(0, $customer->getGroupId());
+            } catch (\Exception $e) {
+                self::fail($e->getMessage());
+            }
         }
     }
 

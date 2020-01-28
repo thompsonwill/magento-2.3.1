@@ -7,7 +7,6 @@
 namespace Magento\Wishlist\Test\TestCase;
 
 use Magento\Customer\Test\Fixture\Customer;
-use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
 
 /**
  * Test Flow:
@@ -22,35 +21,25 @@ use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
  * 3. Add created product to Wishlist according to dataset
  * 4. Perform all assertions
  *
- * @group Wishlist
+ * @group Wishlist_(CS)
  * @ZephyrId MAGETWO-29045
  */
 class AddProductToWishlistEntityTest extends AbstractWishlistTest
 {
     /* tags */
     const MVP = 'no';
+    const DOMAIN = 'CS';
     /* end tags */
-
-    /**
-     * DomainWhitelist CLI
-     *
-     * @var EnvWhitelist
-     */
-    private $envWhitelist;
 
     /**
      * Prepare data for test
      *
      * @param Customer $customer
-     * @param EnvWhitelist $envWhitelist
      * @return array
      */
-    public function __prepare(
-        Customer $customer,
-        EnvWhitelist $envWhitelist
-    ) {
+    public function __prepare(Customer $customer)
+    {
         $customer->persist();
-        $this->envWhitelist = $envWhitelist;
 
         return ['customer' => $customer];
     }
@@ -65,7 +54,6 @@ class AddProductToWishlistEntityTest extends AbstractWishlistTest
      */
     public function test(Customer $customer, $product, $configure = true)
     {
-        $this->envWhitelist->addHost('example.com');
         $product = $this->createProducts($product)[0];
 
         // Steps:
@@ -73,15 +61,5 @@ class AddProductToWishlistEntityTest extends AbstractWishlistTest
         $this->addToWishlist([$product], $configure);
 
         return ['product' => $product];
-    }
-
-    /**
-     * Clean data after running test.
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        $this->envWhitelist->removeHost('example.com');
     }
 }

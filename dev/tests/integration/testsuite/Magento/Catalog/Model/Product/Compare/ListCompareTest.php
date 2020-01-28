@@ -6,7 +6,11 @@
 
 namespace Magento\Catalog\Model\Product\Compare;
 
-class ListCompareTest extends \PHPUnit\Framework\TestCase
+/**
+ * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+ * @magentoDataFixture Magento/Customer/_files/customer.php
+ */
+class ListCompareTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \Magento\Catalog\Model\Product\Compare\ListCompare
@@ -25,14 +29,14 @@ class ListCompareTest extends \PHPUnit\Framework\TestCase
     {
         /** @var $session \Magento\Customer\Model\Session */
         $this->_session = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-            ->get(\Magento\Customer\Model\Session::class);
+            ->get('Magento\Customer\Model\Session');
         $this->_visitor = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-            ->create(\Magento\Customer\Model\Visitor::class);
+            ->create('Magento\Customer\Model\Visitor');
         $this->_visitor->setSessionId(md5(time()) . md5(microtime()))
             ->setLastVisitAt((new \DateTime())->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT))
             ->save();
         $this->_model = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-            ->create(\Magento\Catalog\Model\Product\Compare\ListCompare::class, ['customerVisitor' => $this->_visitor]);
+            ->create('Magento\Catalog\Model\Product\Compare\ListCompare', ['customerVisitor' => $this->_visitor]);
     }
 
     protected function tearDown()
@@ -40,49 +44,22 @@ class ListCompareTest extends \PHPUnit\Framework\TestCase
         $this->_session->setCustomerId(null);
     }
 
-    /**
-     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
-     * @magentoDataFixture Magento/Customer/_files/customer.php
-     */
     public function testAddProductWithSession()
     {
         $this->_session->setCustomerId(1);
         /** @var $product \Magento\Catalog\Model\Product */
         $product = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-            ->create(\Magento\Catalog\Model\Product::class)
+            ->create('Magento\Catalog\Model\Product')
             ->load(1);
-        /** @var $product2 \Magento\Catalog\Model\Product */
-        $product2 = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-            ->create(\Magento\Catalog\Model\Product::class)
-            ->load(6);
-        $products = [$product->getId(), $product2->getId()];
-        $this->_model->addProducts($products);
-
+        $this->_model->addProduct($product);
         $this->assertTrue($this->_model->hasItems(1, $this->_visitor->getId()));
     }
 
-    /**
-     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
-     * @magentoDataFixture Magento/Customer/_files/customer.php
-     */
-    public function testAddProductWithSessionNeg()
-    {
-        $this->_session->setCustomerId(1);
-        $products = ['none', 99];
-        $this->_model->addProducts($products);
-
-        $this->assertFalse($this->_model->hasItems(1, $this->_visitor->getId()));
-    }
-
-    /**
-     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
-     * @magentoDataFixture Magento/Customer/_files/customer.php
-     */
     public function testAddProductWithoutSession()
     {
         /** @var $product \Magento\Catalog\Model\Product */
         $product = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-            ->create(\Magento\Catalog\Model\Product::class)
+            ->create('Magento\Catalog\Model\Product')
             ->load(1);
         $this->_model->addProduct($product);
         $this->assertFalse($this->_model->hasItems(1, $this->_visitor->getId()));

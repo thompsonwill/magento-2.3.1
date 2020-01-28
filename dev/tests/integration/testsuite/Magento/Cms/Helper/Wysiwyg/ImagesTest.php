@@ -7,35 +7,26 @@ namespace Magento\Cms\Helper\Wysiwyg;
 
 use Magento\Framework\App\Filesystem\DirectoryList;
 
-/**
- * @magentoAppArea adminhtml
- */
-class ImagesTest extends \PHPUnit\Framework\TestCase
+class ImagesTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetStorageRoot()
     {
         /** @var \Magento\Framework\Filesystem $filesystem */
         $filesystem = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->get(
-            \Magento\Framework\Filesystem::class
+            'Magento\Framework\Filesystem'
         );
         $mediaPath = $filesystem->getDirectoryRead(DirectoryList::MEDIA)->getAbsolutePath();
         /** @var \Magento\Cms\Helper\Wysiwyg\Images $helper */
         $helper = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-            \Magento\Cms\Helper\Wysiwyg\Images::class
+            'Magento\Cms\Helper\Wysiwyg\Images'
         );
         $this->assertStringStartsWith($mediaPath, $helper->getStorageRoot());
     }
 
-    /**
-     * @magentoConfigFixture default_store admin/url/use_custom 1
-     * @magentoConfigFixture default_store admin/url/custom http://backend/
-     * @magentoConfigFixture admin_store web/secure/base_url http://backend/
-     * @magentoConfigFixture admin_store web/unsecure/base_url http://backend/
-     */
     public function testGetCurrentUrl()
     {
         $helper = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-            \Magento\Cms\Helper\Wysiwyg\Images::class
+            'Magento\Cms\Helper\Wysiwyg\Images'
         );
         $this->assertStringStartsWith('http://localhost/', $helper->getCurrentUrl());
     }

@@ -3,26 +3,10 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-
-use Magento\Downloadable\Api\DomainManagerInterface;
-
 /**
  * @var \Magento\Catalog\Model\Product $product
  */
-$objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
-
-/** @var DomainManagerInterface $domainManager */
-$domainManager = $objectManager->get(DomainManagerInterface::class);
-$domainManager->addDomains(
-    [
-        'example.com',
-        'www.example.com',
-        'www.sample.example.com',
-        'google.com'
-    ]
-);
-
-$product = $objectManager->create(\Magento\Catalog\Model\Product::class);
+$product = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create('Magento\Catalog\Model\Product');
 $product
     ->setTypeId(\Magento\Downloadable\Model\Product\Type::TYPE_DOWNLOADABLE)
     ->setId(1)
@@ -45,7 +29,7 @@ $product
  * @var \Magento\Downloadable\Api\Data\LinkInterfaceFactory $linkFactory
  */
 $linkFactory = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-    ->get(\Magento\Downloadable\Api\Data\LinkInterfaceFactory::class);
+    ->get('Magento\Downloadable\Api\Data\LinkInterfaceFactory');
 $links = [];
 $linkData = [
     'title' => 'Downloadable Product Link',

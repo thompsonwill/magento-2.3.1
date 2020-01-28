@@ -53,7 +53,7 @@ abstract class AbstractAssertForm extends AbstractConstraint
             }
             $formValue = isset($formData[$key]) ? $formData[$key] : null;
             if (is_numeric($formValue)) {
-                $formValue = (float)$formValue;
+                $formValue = floatval($formValue);
             }
 
             if (null === $formValue) {
@@ -118,8 +118,8 @@ abstract class AbstractAssertForm extends AbstractConstraint
 
     /**
      * Sort multidimensional array by paths.
-     * Pattern path: key/subKey::sortKey.
-     * Example:
+     * Pattern path: key/subKey::sorkKey.
+     * Exapmle:
      * $data = [
      *     'custom_options' => [
      *         'options' => [

@@ -3,7 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
 
 namespace Magento\Paypal\Controller\Adminhtml\System;
 
@@ -26,7 +25,7 @@ class ConfigTest extends \Magento\TestFramework\TestCase\AbstractBackendControll
      * @param array $groups
      * @return void
      */
-    public function testSaveMerchantCountry(string $section, array $groups)
+    public function testSaveMerchantCountry($section, $groups)
     {
         /** @var ScopeConfigInterface $scopeConfig */
         $scopeConfig = Bootstrap::getObjectManager()->get(ScopeConfigInterface::class);
@@ -49,7 +48,7 @@ class ConfigTest extends \Magento\TestFramework\TestCase\AbstractBackendControll
     /**
      * @return array
      */
-    public function saveMerchantCountryDataProvider(): array
+    public function saveMerchantCountryDataProvider()
     {
         return [
             [

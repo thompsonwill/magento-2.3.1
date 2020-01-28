@@ -13,7 +13,6 @@ use Magento\Mtf\Fixture\FixtureFactory;
 use Magento\Mtf\Fixture\InjectableFixture;
 use Magento\Mtf\ObjectManager;
 use Magento\Mtf\TestCase\Injectable;
-use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
 
 /**
  * Preconditions
@@ -24,14 +23,14 @@ use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
  * 2. Click 'Remove item' button from Shopping Cart for each product(s)
  * 3. Perform all asserts
  *
- * @group Shopping_Cart
+ * @group Shopping_Cart_(CS)
  * @ZephyrId MAGETWO-25218
  */
 class DeleteProductsFromShoppingCartTest extends Injectable
 {
     /* tags */
     const MVP = 'yes';
-    const SEVERITY = 'S1';
+    const DOMAIN = 'CS';
     /* end tags */
 
     /**
@@ -63,46 +62,35 @@ class DeleteProductsFromShoppingCartTest extends Injectable
     protected $cartPage;
 
     /**
-     * DomainWhitelist CLI
-     *
-     * @var EnvWhitelist
-     */
-    private $envWhitelist;
-
-    /**
      * Prepare test data
      *
      * @param BrowserInterface $browser
      * @param FixtureFactory $fixtureFactory
      * @param CatalogProductView $catalogProductView
      * @param CheckoutCart $cartPage
-     * @param EnvWhitelist $envWhitelist
      * @return void
      */
     public function __prepare(
         BrowserInterface $browser,
         FixtureFactory $fixtureFactory,
         CatalogProductView $catalogProductView,
-        CheckoutCart $cartPage,
-        EnvWhitelist $envWhitelist
+        CheckoutCart $cartPage
     ) {
         $this->browser = $browser;
         $this->fixtureFactory = $fixtureFactory;
         $this->catalogProductView = $catalogProductView;
         $this->cartPage = $cartPage;
-        $this->envWhitelist = $envWhitelist;
     }
 
     /**
      * Run test add products to shopping cart
      *
-     * @param array $productsData
+     * @param string $productsData
      * @return void
      */
     public function test($productsData)
     {
         // Preconditions
-        $this->envWhitelist->addHost('example.com');
         $products = $this->prepareProducts($productsData);
 
         // Steps
@@ -113,13 +101,13 @@ class DeleteProductsFromShoppingCartTest extends Injectable
     /**
      * Create products
      *
-     * @param array $productList
+     * @param string $productList
      * @return InjectableFixture[]
      */
     protected function prepareProducts($productList)
     {
         $createProductsStep = ObjectManager::getInstance()->create(
-            \Magento\Catalog\Test\TestStep\CreateProductsStep::class,
+            'Magento\Catalog\Test\TestStep\CreateProductsStep',
             ['products' => $productList]
         );
 
@@ -136,7 +124,7 @@ class DeleteProductsFromShoppingCartTest extends Injectable
     protected function addToCart(array $products)
     {
         $addToCartStep = ObjectManager::getInstance()->create(
-            \Magento\Checkout\Test\TestStep\AddProductsToTheCartStep::class,
+            'Magento\Checkout\Test\TestStep\AddProductsToTheCartStep',
             ['products' => $products]
         );
         $addToCartStep->run();
@@ -154,10 +142,5 @@ class DeleteProductsFromShoppingCartTest extends Injectable
         foreach ($products as $product) {
             $this->cartPage->getCartBlock()->getCartItem($product)->removeItem();
         }
-    }
-
-    protected function tearDown()
-    {
-        $this->envWhitelist->removeHost('example.com');
     }
 }

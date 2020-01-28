@@ -9,7 +9,7 @@ use Magento\TestFramework\Helper\Bootstrap;
 use Zend\Stdlib\RequestInterface as Request;
 use Zend\View\Model\JsonModel;
 
-class UrlCheckTest extends \PHPUnit\Framework\TestCase
+class UrlCheckTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var UrlCheck
@@ -22,11 +22,11 @@ class UrlCheckTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param array $requestContent
-     * @param bool $successUrl
-     * @param bool $successSecureUrl
-     * @return void
+     * @param $requestContent
+     * @param $successUrl
+     * @param $successSecureUrl
      * @dataProvider indexActionDataProvider
+     * @throws \ReflectionException
      */
     public function testIndexAction($requestContent, $successUrl, $successSecureUrl)
     {

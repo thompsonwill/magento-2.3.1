@@ -16,7 +16,6 @@ $data = [
     'backend_type' => '',
     'is_searchable' => 0,
     'is_filterable' => 0,
-    'is_user_defined' => 1,
     'is_filterable_in_search' => 0,
     'frontend_label' => 'Attribute ',
     'entity_type_id' => 4
@@ -51,7 +50,7 @@ $data['options']['option'] = array_reduce(
     function ($values, $index) use ($optionsPerAttribute) {
         $values[] = [
             'label' => 'option ' . $index,
-            'value' => 'option_' . $index,
+            'value' => 'option_' . $index
         ];
         return $values;
     },
@@ -62,7 +61,8 @@ $options = [];
 foreach ($data['options']['option'] as $optionData) {
     $options[] = $objectManager->get(AttributeOptionInterface::class)
         ->setLabel($optionData['label'])
-        ->setValue($optionData['value']);
+        ->setValue($optionData['value'])
+        ;
 }
 
 $attribute = $objectManager->create(

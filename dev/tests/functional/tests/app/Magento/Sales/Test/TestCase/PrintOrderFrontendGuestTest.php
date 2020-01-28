@@ -8,7 +8,6 @@ namespace Magento\Sales\Test\TestCase;
 
 use Magento\Mtf\Client\BrowserInterface;
 use Magento\Mtf\TestCase\Scenario;
-use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
 
 /**
  * Preconditions:
@@ -26,21 +25,15 @@ use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
  * 5. Click on the "Print Order" button.
  * 6. Perform appropriate assertions.v
  *
- * @group Order_Management
+ * @group Order_Management_(CS)
  * @ZephyrId MAGETWO-30253
  */
 class PrintOrderFrontendGuestTest extends Scenario
 {
     /* tags */
     const MVP = 'yes';
+    const DOMAIN = 'CS';
     /* end tags */
-
-    /**
-     * DomainWhitelist CLI
-     *
-     * @var EnvWhitelist
-     */
-    private $envWhitelist;
 
     /**
      * Browser.
@@ -53,14 +46,10 @@ class PrintOrderFrontendGuestTest extends Scenario
      * Prepare data.
      *
      * @param BrowserInterface $browser
-     * @param EnvWhitelist $envWhitelist
      */
-    public function __prepare(
-        BrowserInterface $browser,
-        EnvWhitelist $envWhitelist
-    ) {
+    public function __prepare(BrowserInterface $browser)
+    {
         $this->browser = $browser;
-        $this->envWhitelist = $envWhitelist;
     }
 
     /**
@@ -70,7 +59,6 @@ class PrintOrderFrontendGuestTest extends Scenario
      */
     public function test()
     {
-        $this->envWhitelist->addHost('example.com');
         $this->executeScenario();
     }
 
@@ -81,7 +69,6 @@ class PrintOrderFrontendGuestTest extends Scenario
      */
     public function tearDown()
     {
-        $this->envWhitelist->removeHost('example.com');
         $this->browser->closeWindow();
     }
 }

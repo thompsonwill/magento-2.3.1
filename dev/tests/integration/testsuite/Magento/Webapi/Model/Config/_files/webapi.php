@@ -4,7 +4,8 @@
  * See COPYING.txt for license details.
  */
 return [
-    'services' => [\Magento\TestModuleMSC\Api\AllSoapAndRestInterface::class => [
+    'services' => [
+        'Magento\TestModuleMSC\Api\AllSoapAndRestInterface' => [
             'V1' => [
                 'methods' => [
                     'item' => [
@@ -38,7 +39,8 @@ return [
                     ],
                 ],
             ],
-        ], \Magento\TestModule1\Service\V1\AllSoapAndRestInterface::class => [
+        ],
+        'Magento\TestModule1\Service\V1\AllSoapAndRestInterface' => [
             'V1' => [
                 'methods' => [
                     'item' => [
@@ -77,7 +79,8 @@ return [
                     ],
                 ],
             ],
-        ], \Magento\TestModule1\Service\V2\AllSoapAndRestInterface::class => [
+        ],
+        'Magento\TestModule1\Service\V2\AllSoapAndRestInterface' => [
             'V2' => [
                 'methods' => [
                     'item' => [
@@ -130,7 +133,7 @@ return [
             'GET' => [
                 'secure' => false,
                 'service' => [
-                    'class' => \Magento\TestModuleMSC\Api\AllSoapAndRestInterface::class,
+                    'class' => 'Magento\TestModuleMSC\Api\AllSoapAndRestInterface',
                     'method' => 'item',
                 ],
                 'resources' => [
@@ -144,7 +147,7 @@ return [
             'POST' => [
                 'secure' => false,
                 'service' => [
-                    'class' => \Magento\TestModuleMSC\Api\AllSoapAndRestInterface::class,
+                    'class' => 'Magento\TestModuleMSC\Api\AllSoapAndRestInterface',
                     'method' => 'create',
                 ],
                 'resources' => [
@@ -158,7 +161,7 @@ return [
             'GET' => [
                 'secure' => false,
                 'service' => [
-                    'class' => \Magento\TestModule1\Service\V1\AllSoapAndRestInterface::class,
+                    'class' => 'Magento\TestModule1\Service\V1\AllSoapAndRestInterface',
                     'method' => 'item',
                 ],
                 'resources' => [
@@ -169,6 +172,22 @@ return [
             ],
         ],
         '/V1/testmodule1' => [
+            'POST' => [
+                'secure' => false,
+                'service' => [
+                    'class' => \Magento\TestModule1\Service\V1\AllSoapAndRestInterface::class,
+                    'method' => 'create',
+                ],
+                'resources' => [
+                    'Magento_Test1::resource1' => true,
+                ],
+                'parameters' => [
+                    'id' => [
+                        'force' => true,
+                        'value' => null,
+                    ],
+                ],
+            ],
             'GET' => [
                 'secure' => false,
                 'service' => [
@@ -185,28 +204,12 @@ return [
                     ],
                 ],
             ],
-            'POST' => [
-                'secure' => false,
-                'service' => [
-                    'class' => \Magento\TestModule1\Service\V1\AllSoapAndRestInterface::class,
-                    'method' => 'create',
-                ],
-                'resources' => [
-                    'Magento_Test1::resource1' => true,
-                ],
-                'parameters' => [
-                    'id' => [
-                        'force' => true,
-                        'value' => null,
-                    ],
-                ],
-            ],
         ],
         '/V2/testmodule1/:id' => [
             'GET' => [
                 'secure' => false,
                 'service' => [
-                    'class' => \Magento\TestModule1\Service\V2\AllSoapAndRestInterface::class,
+                    'class' => 'Magento\TestModule1\Service\V2\AllSoapAndRestInterface',
                     'method' => 'item',
                 ],
                 'resources' => [
@@ -219,7 +222,7 @@ return [
             'DELETE' => [
                 'secure' => false,
                 'service' => [
-                    'class' => \Magento\TestModule1\Service\V2\AllSoapAndRestInterface::class,
+                    'class' => 'Magento\TestModule1\Service\V2\AllSoapAndRestInterface',
                     'method' => 'delete',
                 ],
                 'resources' => [
@@ -232,7 +235,7 @@ return [
             'PUT' => [
                 'secure' => false,
                 'service' => [
-                    'class' => \Magento\TestModule1\Service\V2\AllSoapAndRestInterface::class,
+                    'class' => 'Magento\TestModule1\Service\V2\AllSoapAndRestInterface',
                     'method' => 'update',
                 ],
                 'resources' => [
@@ -247,7 +250,7 @@ return [
             'POST' => [
                 'secure' => false,
                 'service' => [
-                    'class' => \Magento\TestModule1\Service\V2\AllSoapAndRestInterface::class,
+                    'class' => 'Magento\TestModule1\Service\V2\AllSoapAndRestInterface',
                     'method' => 'create',
                 ],
                 'resources' => [
@@ -266,7 +269,7 @@ return [
             'GET' => [
                 'secure' => false,
                 'service' => [
-                    'class' => \Magento\TestModuleMSC\Api\AllSoapAndRestInterface::class,
+                    'class' => 'Magento\TestModuleMSC\Api\AllSoapAndRestInterface',
                     'method' => 'getPreconfiguredItem',
                 ],
                 'resources' => [

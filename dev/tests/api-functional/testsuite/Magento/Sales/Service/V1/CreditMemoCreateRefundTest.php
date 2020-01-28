@@ -10,7 +10,7 @@ use Magento\Sales\Model\Order;
 use Magento\TestFramework\TestCase\WebapiAbstract;
 
 /**
- * API tests for CreditMemoCreateRefund.
+ * Class CreditMemoCreateRefundTest
  */
 class CreditMemoCreateRefundTest extends WebapiAbstract
 {
@@ -25,23 +25,18 @@ class CreditMemoCreateRefundTest extends WebapiAbstract
      */
     protected $objectManager;
 
-    /**
-     * @inheritdoc
-     */
     protected function setUp()
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
     }
 
     /**
-     * Test for Invoke method.
-     *
      * @magentoApiDataFixture Magento/Sales/_files/invoice.php
      */
     public function testInvoke()
     {
         /** @var \Magento\Sales\Model\Order $order */
-        $orderCollection = $this->objectManager->get(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
+        $orderCollection = $this->objectManager->get('Magento\Sales\Model\ResourceModel\Order\Collection');
         $order = $orderCollection->getFirstItem();
         $items = [];
 

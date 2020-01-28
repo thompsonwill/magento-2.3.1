@@ -5,10 +5,7 @@
  */
 namespace Magento\Catalog\Model\ResourceModel\Product;
 
-/**
- * Collection test
- */
-class CollectionTest extends \PHPUnit\Framework\TestCase
+class CollectionTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\Collection
@@ -21,41 +18,30 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
     protected $processor;
 
     /**
-     * @var \Magento\Catalog\Api\ProductRepositoryInterface
-     */
-    private $productRepository;
-
-    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp()
     {
         $this->collection = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-            \Magento\Catalog\Model\ResourceModel\Product\Collection::class
+            'Magento\Catalog\Model\ResourceModel\Product\Collection'
         );
 
         $this->processor = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-            \Magento\Catalog\Model\Indexer\Product\Price\Processor::class
-        );
-
-        $this->productRepository = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-            \Magento\Catalog\Api\ProductRepositoryInterface::class
+            'Magento\Catalog\Model\Indexer\Product\Price\Processor'
         );
     }
 
     /**
      * @magentoDataFixture Magento/Catalog/_files/products.php
      * @magentoAppIsolation enabled
-     * @magentoDbIsolation disabled
      */
     public function testAddPriceDataOnSchedule()
     {
         $this->processor->getIndexer()->setScheduled(true);
         $this->assertTrue($this->processor->getIndexer()->isScheduled());
-
         $productRepository = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-            ->create(\Magento\Catalog\Api\ProductRepositoryInterface::class);
+            ->create('Magento\Catalog\Api\ProductRepositoryInterface');
         /** @var \Magento\Catalog\Api\Data\ProductInterface $product */
         $product = $productRepository->get('simple');
         $this->assertEquals(10, $product->getPrice());
@@ -74,7 +60,7 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
         $this->processor->getIndexer()->reindexList([1]);
 
         $this->collection = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
-            \Magento\Catalog\Model\ResourceModel\Product\Collection::class
+            'Magento\Catalog\Model\ResourceModel\Product\Collection'
         );
         $this->collection->addPriceData(0, 1);
         $this->collection->load();
@@ -85,6 +71,7 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
         $product = reset($items);
         $this->assertCount(2, $items);
         $this->assertEquals(15, $product->getPrice());
+        $this->processor->getIndexer()->reindexList([1]);
 
         $this->processor->getIndexer()->setScheduled(false);
     }
@@ -92,14 +79,13 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
     /**
      * @magentoDataFixture Magento/Catalog/_files/products.php
      * @magentoAppIsolation enabled
-     * @magentoDbIsolation disabled
      */
     public function testAddPriceDataOnSave()
     {
         $this->processor->getIndexer()->setScheduled(false);
         $this->assertFalse($this->processor->getIndexer()->isScheduled());
         $productRepository = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-            ->create(\Magento\Catalog\Api\ProductRepositoryInterface::class);
+            ->create('Magento\Catalog\Api\ProductRepositoryInterface');
         /** @var \Magento\Catalog\Api\Data\ProductInterface $product */
         $product = $productRepository->get('simple');
         $this->assertNotEquals(15, $product->getPrice());
@@ -116,132 +102,28 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @magentoDataFixture Magento/Catalog/Model/ResourceModel/_files/product_simple.php
-     * @magentoDbIsolation enabled
-     */
-    public function testGetProductsWithTierPrice()
-    {
-        $product = $this->productRepository->get('simple products');
-        $items = $this->collection->addIdFilter($product->getId())->addAttributeToSelect('price')
-            ->load()->addTierPriceData();
-        $tierPrices = $items->getFirstItem()->getTierPrices();
-        $this->assertCount(3, $tierPrices);
-        $this->assertEquals(50, $tierPrices[2]->getExtensionAttributes()->getPercentageValue());
-        $this->assertEquals(5, $tierPrices[2]->getValue());
-    }
-
-    /**
-     * @magentoDataFixture Magento/Catalog/_files/products.php
-     * @magentoDbIsolation disabled
-     */
-    public function testGetProductsWithSpecialPrice()
-    {
-        $product = $this->productRepository->get('simple');
-        $originalFinalPrice = $product->getFinalPrice();
-
-        $specialPrice = 9;
-        $product->setSpecialPrice($specialPrice);
-        $product = $this->productRepository->save($product);
-        /** @var \Magento\Catalog\Model\Product $item */
-        $item = $this->collection->addIdFilter($product->getId())
-            ->addPriceData()
-            ->getFirstItem();
-        $item->setPriceCalculation(false);
-        $this->assertEquals($specialPrice, $item->getFinalPrice());
-
-        $product->setSpecialPrice(null);
-        $product = $this->productRepository->save($product);
-        /** @var \Magento\Catalog\Model\Product $item */
-        $item = $this->collection->clear()
-            ->addIdFilter($product->getId())
-            ->addPriceData()
-            ->getFirstItem();
-        $item->setPriceCalculation(false);
-        $this->assertEquals($originalFinalPrice, $item->getFinalPrice());
-    }
-
-    /**
-     * Test addAttributeToSort() with attribute 'is_saleable' works properly on frontend.
-     *
-     * @dataProvider addAttributeToSortDataProvider
-     * @magentoDataFixture Magento/Catalog/_files/multiple_products_with_non_saleable_product.php
-     * @magentoConfigFixture current_store cataloginventory/options/show_out_of_stock 1
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
      * @magentoAppIsolation enabled
-     * @magentoAppArea frontend
      */
-    public function testAddAttributeToSort(string $productSku, string $order)
+    public function testAddTierPrice()
     {
-        /** @var Collection $productCollection */
-        $this->collection->addAttributeToSort('is_saleable', $order);
-        self::assertEquals(2, $this->collection->count());
-        self::assertSame($productSku, $this->collection->getFirstItem()->getSku());
-    }
+        $this->assertEquals($this->collection->getFlag('tier_price_added'), false);
 
-    /**
-     * Provide test data for testAddAttributeToSort().
-     *
-     * @return array
-     */
-    public function addAttributeToSortDataProvider()
-    {
-        return [
-            [
-                'product_sku' => 'simple_saleable',
-                'order' => Collection::SORT_ORDER_DESC,
-            ],
-            [
-                'product_sku' => 'simple_not_saleable',
-                'order' => Collection::SORT_ORDER_ASC,
-            ]
-        ];
-    }
+        $productRepository = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
+            ->create('Magento\Catalog\Api\ProductRepositoryInterface');
 
-    /**
-     * Checks a case if table for join specified as an array.
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function testJoinTable()
-    {
-        $this->collection->joinTable(
-            ['alias' => 'url_rewrite'],
-            'entity_id = entity_id',
-            ['request_path'],
-            '{{table}}.entity_type = \'product\'',
-            'left'
-        );
-        $sql = (string) $this->collection->getSelect();
-        $productTable = $this->collection->getTable('catalog_product_entity');
-        $urlRewriteTable = $this->collection->getTable('url_rewrite');
+        /** @var \Magento\Catalog\Api\Data\ProductInterface $product */
+        $product = $productRepository->get('simple');
+        $this->assertEquals(3, count($product->getTierPrices()));
 
-        $expected = 'SELECT `e`.*, `alias`.`request_path` FROM `' . $productTable . '` AS `e`'
-            . ' LEFT JOIN `' . $urlRewriteTable . '` AS `alias` ON (alias.entity_id =e.entity_id)'
-            . ' AND (alias.entity_type = \'product\')';
+        $product->setTierPrices([]);
+        $this->assertEquals(0, count($product->getTierPrices()));
 
-        self::assertContains($expected, str_replace(PHP_EOL, '', $sql));
-    }
+        $this->collection->addTierPriceData();
+        $this->collection->load();
 
-    /**
-     * @magentoDataFixture Magento/Catalog/Model/ResourceModel/_files/few_simple_products.php
-     * @magentoDbIsolation enabled
-     */
-    public function testAddAttributeToFilterAffectsGetSize()
-    {
-        $this->assertEquals(10, $this->collection->getSize());
-        $this->collection->addAttributeToFilter('sku', 'Product1');
-        $this->assertEquals(1, $this->collection->getSize());
-    }
-
-    /**
-     * Add tier price attribute filter to collection
-     *
-     * @magentoDataFixture Magento/Catalog/Model/ResourceModel/_files/few_simple_products.php
-     * @magentoDataFixture Magento/Catalog/Model/ResourceModel/_files/product_simple.php
-     */
-    public function testAddAttributeTierPriceToFilter()
-    {
-        $this->assertEquals(11, $this->collection->getSize());
-        $this->collection->addAttributeToFilter('tier_price', ['gt' => 0]);
-        $this->assertEquals(1, $this->collection->getSize());
+        $items = $this->collection->getItems();
+        $product = reset($items);
+        $this->assertEquals(3, count($product->getTierPrices()));
     }
 }

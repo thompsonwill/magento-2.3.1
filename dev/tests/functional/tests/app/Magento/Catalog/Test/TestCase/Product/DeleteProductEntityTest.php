@@ -10,7 +10,6 @@ use Magento\Catalog\Test\Fixture\Category;
 use Magento\Catalog\Test\Page\Adminhtml\CatalogProductIndex;
 use Magento\Mtf\Fixture\FixtureFactory;
 use Magento\Mtf\TestCase\Injectable;
-use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
 
 /**
  * Preconditions:
@@ -24,13 +23,14 @@ use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
  * 5. Submit form.
  * 6. Perform asserts.
  *
- * @group Products
+ * @group Products_(MX)
  * @ZephyrId MAGETWO-23272
  */
 class DeleteProductEntityTest extends Injectable
 {
     /* tags */
     const MVP = 'yes';
+    const DOMAIN = 'MX';
     /* end tags */
 
     /**
@@ -41,24 +41,13 @@ class DeleteProductEntityTest extends Injectable
     protected $catalogProductIndex;
 
     /**
-     * DomainWhitelist CLI
-     *
-     * @var EnvWhitelist
-     */
-    private $envWhitelist;
-
-    /**
      * Prepare data.
      *
      * @param Category $category
-     * @param EnvWhitelist $envWhitelist
      * @return array
      */
-    public function __prepare(
-        Category $category,
-        EnvWhitelist $envWhitelist
-    ) {
-        $this->envWhitelist = $envWhitelist;
+    public function __prepare(Category $category)
+    {
         $category->persist();
         return [
             'category' => $category
@@ -87,7 +76,6 @@ class DeleteProductEntityTest extends Injectable
     public function test($products, FixtureFactory $fixtureFactory, Category $category)
     {
         //Steps
-        $this->envWhitelist->addHost('example.com');
         $products = explode(',', $products);
         $deleteProducts = [];
         foreach ($products as &$product) {
@@ -110,13 +98,5 @@ class DeleteProductEntityTest extends Injectable
         $this->catalogProductIndex->getProductGrid()->massaction($deleteProducts, 'Delete', true);
 
         return ['product' => $products];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function tearDown()
-    {
-        $this->envWhitelist->removeHost('example.com');
     }
 }

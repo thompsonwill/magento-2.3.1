@@ -52,7 +52,7 @@ class SchemaXml
     public function __construct(ObjectManagerInterface $objectManager)
     {
         $this->objectManager = $objectManager;
-        $this->fieldsProvider = $this->objectManager->create(\Magento\Mtf\Util\Generate\Fixture\FieldsProvider::class);
+        $this->fieldsProvider = $this->objectManager->create('Magento\Mtf\Util\Generate\Fixture\FieldsProvider');
         $this->dom = new \DOMDocument('1.0');
         $this->dom->load(dirname(__FILE__) . '/template.xml');
         $this->dom->preserveWhiteSpace = false;
@@ -145,7 +145,7 @@ class SchemaXml
         foreach ($fields as $fieldName => $fieldValue) {
             $field = $this->dom->createElement('field');
             $field->setAttribute('name', $fieldName);
-            $field->setAttribute('is_required', (int)$fieldValue['is_required']);
+            $field->setAttribute('is_required', intval($fieldValue['is_required']));
             $fixture->appendChild($field);
         }
 

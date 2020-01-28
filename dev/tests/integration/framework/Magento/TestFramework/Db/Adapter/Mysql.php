@@ -4,12 +4,14 @@
  * See COPYING.txt for license details.
  */
 
+// @codingStandardsIgnoreFile
+
 /**
  * See \Magento\TestFramework\Db\Adapter\TransactionInterface
  */
 namespace Magento\TestFramework\Db\Adapter;
 
-class Mysql extends \Magento\Framework\DB\Adapter\Pdo\Mysql implements TransactionInterface
+class Mysql extends \Magento\Framework\DB\Adapter\Pdo\Mysql implements \Magento\TestFramework\Db\Adapter\TransactionInterface
 {
     /**
      * @var int
@@ -47,5 +49,15 @@ class Mysql extends \Magento\Framework\DB\Adapter\Pdo\Mysql implements Transacti
     {
         $this->_levelAdjustment -= 1;
         return $this->rollback();
+    }
+
+    /**
+     * Adjust transaction level with "transparent" counter
+     *
+     * @return int
+     */
+    public function getTransactionLevel()
+    {
+        return parent::getTransactionLevel() - $this->_levelAdjustment;
     }
 }

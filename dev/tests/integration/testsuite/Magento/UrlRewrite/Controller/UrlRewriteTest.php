@@ -5,9 +5,6 @@
  */
 namespace Magento\UrlRewrite\Controller;
 
-/**
- * Class to test Match corresponding URL Rewrite
- */
 class UrlRewriteTest extends \Magento\TestFramework\TestCase\AbstractController
 {
     /**
@@ -19,36 +16,20 @@ class UrlRewriteTest extends \Magento\TestFramework\TestCase\AbstractController
      *
      * @param string $request
      * @param string $redirect
-     * @param int $expectedCode
      *
      * @dataProvider requestDataProvider
      */
-    public function testMatchUrlRewrite(
-        $request,
-        $redirect,
-        $expectedCode = 301
-    ) {
+    public function testMatchUrlRewrite($request, $redirect)
+    {
         $this->dispatch($request);
-        $response = $this->getResponse();
-        $code = $response->getHttpResponseCode();
-        $this->assertEquals($expectedCode, $code, 'Invalid response code');
+        $code = $this->getResponse()->getHttpResponseCode();
+        $location = $this->getResponse()->getHeader('Location')->getFieldValue();
 
-        if ($expectedCode !== 200) {
-            $location = $response->getHeader('Location')->getFieldValue();
-            $this->assertStringEndsWith(
-                $redirect,
-                $location,
-                'Invalid location header'
-            );
-        }
+        $this->assertEquals(301, $code, 'Invalid response code');
+        $this->assertStringEndsWith($redirect, $location, 'Invalid location header');
     }
 
-    /**
-     * Data provider for testMatchUrlRewrite
-     *
-     * @return array
-     */
-    public function requestDataProvider(): array
+    public function requestDataProvider()
     {
         return [
             'Use Case #1: Rewrite: page-one/ --(301)--> page-a/; Request: page-one/ --(301)--> page-a/' => [
@@ -74,11 +55,6 @@ class UrlRewriteTest extends \Magento\TestFramework\TestCase\AbstractController
             'Use Case #6: Rewrite: page-similar/ --(301)--> page-b; Request: page-similar/ --(301)--> page-b' => [
                 'request' => '/page-similar/',
                 'redirect' => '/page-b',
-            ],
-            'Use Case #7: Request with query params' => [
-                'request' => '/enable-cookies/?test-param',
-                'redirect' => '',
-                200,
             ],
         ];
     }

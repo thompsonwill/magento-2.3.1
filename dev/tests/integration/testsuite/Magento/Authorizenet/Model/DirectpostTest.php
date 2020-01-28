@@ -18,11 +18,9 @@ use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
 /**
- * Class contains tests for Direct Post integration
- *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * Class contains tests for Direct Post integration.
  */
-class DirectpostTest extends \PHPUnit\Framework\TestCase
+class DirectpostTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var ObjectManager
@@ -48,14 +46,18 @@ class DirectpostTest extends \PHPUnit\Framework\TestCase
             ->setMethods(['create'])
             ->getMock();
 
-        $this->directPost = $this->objectManager->create(Directpost::class, [
-            'httpClientFactory' => $this->httpClientFactory
-        ]);
+        $this->directPost = $this->objectManager->create(
+            Directpost::class,
+            [
+                'httpClientFactory' => $this->httpClientFactory,
+            ]
+        );
     }
 
     /**
      * @covers \Magento\Authorizenet\Model\Directpost::capture
      * @magentoDataFixture Magento/Authorizenet/_files/order.php
+     * @return void
      */
     public function testCapture()
     {
@@ -108,6 +110,7 @@ class DirectpostTest extends \PHPUnit\Framework\TestCase
      * @param string $filterAction
      * @param string $orderId
      * @param string $expectedOrderState
+     * @return void
      *
      * @magentoConfigFixture current_store payment/authorizenet_directpost/trans_md5 TestHash
      * @magentoConfigFixture current_store payment/authorizenet_directpost/login TestLogin
@@ -143,7 +146,7 @@ class DirectpostTest extends \PHPUnit\Framework\TestCase
             [
                 'filter_action' => 'report',
                 'order_id' => '100000004',
-                'expected_order_state' => Order::STATE_COMPLETE,
+                'expected_order_state' => Order::STATE_PROCESSING,
             ],
         ];
     }
@@ -222,6 +225,7 @@ class DirectpostTest extends \PHPUnit\Framework\TestCase
 
         /** @var OrderInterface $order */
         $order = array_pop($orders);
+
         return $order->getPayment();
     }
 

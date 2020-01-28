@@ -11,10 +11,11 @@ define([
 
     describe('ui/js/grid/sticky/sticky', function () {
         var stickyObj,
-            data;
+            data,
+            stub;
 
-        /** Stub */
-        Sticky.prototype.initialize = function () {};
+        Sticky.prototype.initialize = function () {
+        };
 
         stickyObj = new Sticky({});
 
@@ -46,10 +47,8 @@ define([
                 expect(stickyObj.initListeners).toHaveBeenCalled();
             });
             it('has initOnScroll method', function () {
-                spyOn(document, 'addEventListener');
                 stickyObj.initOnScroll();
                 expect(stickyObj.lastHorizontalScrollPos).toBeDefined();
-                expect(document.addEventListener).toHaveBeenCalledWith('scroll', jasmine.any(Function));
             });
             it('has initOnListingScroll method', function () {
                 spyOn(stickyObj, 'initOnListingScroll');
@@ -64,8 +63,7 @@ define([
         });
         describe('has handlers', function () {
             it('has onWindowScroll event', function () {
-                /** Stub */
-                stickyObj.adjustOffset = function () {
+                stickyObj.adjustOffset = function (){
                     return this;
                 };
 
@@ -88,7 +86,6 @@ define([
         describe('has getters', function () {
             it('has getListingWidth', function () {
                 stickyObj.listingNode = {
-                    /** Stub */
                     width: function () {
                         return 100500;
                     }
@@ -147,13 +144,10 @@ define([
                 expect(stickyObj.visible).toEqual(false);
             });
             it('has adjustContainerElemsWidth event', function () {
-                /** Stub */
-                stickyObj.resizeContainer = function () {
+                stickyObj.resizeContainer = function(){
                     return this;
                 };
-
-                /** Stub */
-                stickyObj.resizeCols = function () {
+                stickyObj.resizeCols = function(){
                     return this;
                 };
                 spyOn(stickyObj, 'resizeBulk');
@@ -166,5 +160,5 @@ define([
                 expect(stickyObj.adjustOffset).toHaveBeenCalled();
             });
         });
-    });
+    })
 });

@@ -7,14 +7,9 @@ namespace Magento\Captcha\Observer;
 
 use Magento\Framework\Message\MessageInterface;
 
-/**
- * @magentoAppArea adminhtml
- */
 class CaseCaptchaIsRequiredAfterFailedLoginAttemptsTest extends \Magento\TestFramework\TestCase\AbstractController
 {
     /**
-     * Tests backend login action with invalid captcha.
-     *
      * @magentoAdminConfigFixture admin/captcha/forms backend_login
      * @magentoAdminConfigFixture admin/captcha/enable 1
      * @magentoAdminConfigFixture admin/captcha/mode always
@@ -22,11 +17,11 @@ class CaseCaptchaIsRequiredAfterFailedLoginAttemptsTest extends \Magento\TestFra
     public function testBackendLoginActionWithInvalidCaptchaReturnsError()
     {
         \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->get(
-            \Magento\Backend\Model\UrlInterface::class
+            'Magento\Backend\Model\UrlInterface'
         )->turnOffSecretKey();
 
         /** @var \Magento\Framework\Data\Form\FormKey $formKey */
-        $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+        $formKey = $this->_objectManager->get('Magento\Framework\Data\Form\FormKey');
         $post = [
             'login' => [
                 'username' => \Magento\TestFramework\Bootstrap::ADMIN_NAME,
@@ -39,7 +34,7 @@ class CaseCaptchaIsRequiredAfterFailedLoginAttemptsTest extends \Magento\TestFra
         $this->dispatch('backend/admin');
         $this->assertSessionMessages($this->equalTo([(string)__('Incorrect CAPTCHA.')]), MessageInterface::TYPE_ERROR);
         $backendUrlModel = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->get(
-            \Magento\Backend\Model\UrlInterface::class
+            'Magento\Backend\Model\UrlInterface'
         );
         $backendUrlModel->turnOffSecretKey();
         $url = $backendUrlModel->getUrl('admin');

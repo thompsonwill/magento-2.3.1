@@ -9,7 +9,6 @@ namespace Magento\Wishlist\Test\TestCase;
 use Magento\Customer\Test\Fixture\Customer;
 use Magento\Customer\Test\Page\Adminhtml\CustomerIndex;
 use Magento\Customer\Test\Page\Adminhtml\CustomerIndexEdit;
-use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
 
 /**
  * Test Flow:
@@ -26,35 +25,25 @@ use Magento\Mtf\Util\Command\Cli\EnvWhitelist;
  * 4. Open wish list tab.
  * 5. Perform assertions.
  *
- * @group Wishlist
+ * @group Wishlist_(CS)
  * @ZephyrId MAGETWO-29616
  */
 class ViewProductInCustomerWishlistOnBackendTest extends AbstractWishlistTest
 {
     /* tags */
     const MVP = 'no';
+    const DOMAIN = 'CS';
     /* end tags */
-
-    /**
-     * DomainWhitelist CLI
-     *
-     * @var EnvWhitelist
-     */
-    private $envWhitelist;
 
     /**
      * Prepare customer for test.
      *
      * @param Customer $customer
-     * @param EnvWhitelist $envWhitelist
      * @return array
      */
-    public function __prepare(
-        Customer $customer,
-        EnvWhitelist $envWhitelist
-    ) {
+    public function __prepare(Customer $customer)
+    {
         $customer->persist();
-        $this->envWhitelist = $envWhitelist;
 
         return ['customer' => $customer];
     }
@@ -75,7 +64,6 @@ class ViewProductInCustomerWishlistOnBackendTest extends AbstractWishlistTest
         CustomerIndexEdit $customerIndexEdit
     ) {
         // Preconditions
-        $this->envWhitelist->addHost('example.com');
         $product = $this->createProducts($product)[0];
         $this->loginCustomer($customer);
         $this->addToWishlist([$product], true);
@@ -86,15 +74,5 @@ class ViewProductInCustomerWishlistOnBackendTest extends AbstractWishlistTest
         $customerIndexEdit->getCustomerForm()->openTab('wishlist');
 
         return['product' => $product];
-    }
-
-    /**
-     * Clean data after running test.
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        $this->envWhitelist->removeHost('example.com');
     }
 }

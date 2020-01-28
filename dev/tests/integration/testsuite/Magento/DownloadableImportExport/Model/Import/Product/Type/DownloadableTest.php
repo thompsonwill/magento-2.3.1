@@ -5,14 +5,14 @@
  */
 namespace Magento\DownloadableImportExport\Model\Import\Product\Type;
 
-use Magento\Downloadable\Api\DomainManagerInterface;
+use Magento\Framework\App\Bootstrap;
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\ImportExport\Model\Import;
 
 /**
  * @magentoAppArea adminhtml
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class DownloadableTest extends \PHPUnit\Framework\TestCase
+class DownloadableTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Downloadable product test Name
@@ -35,11 +35,6 @@ class DownloadableTest extends \PHPUnit\Framework\TestCase
     const TEST_PRODUCT_SAMPLES_GROUP_NAME = 'TEST Import Samples';
 
     /**
-     * @var DomainManagerInterface
-     */
-    private $domainManager;
-
-    /**
      * @var \Magento\CatalogImportExport\Model\Import\Product
      */
     protected $model;
@@ -54,9 +49,6 @@ class DownloadableTest extends \PHPUnit\Framework\TestCase
      */
     protected $productMetadata;
 
-    /**
-     * @inheritDoc
-     */
     protected function setUp()
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
@@ -66,17 +58,6 @@ class DownloadableTest extends \PHPUnit\Framework\TestCase
         /** @var \Magento\Framework\EntityManager\MetadataPool $metadataPool */
         $metadataPool = $this->objectManager->get(\Magento\Framework\EntityManager\MetadataPool::class);
         $this->productMetadata = $metadataPool->getMetadata(\Magento\Catalog\Api\Data\ProductInterface::class);
-
-        $this->domainManager = $this->objectManager->get(DomainManagerInterface::class);
-        $this->domainManager->addDomains(['www.bing.com', 'www.google.com', 'www.yahoo.com']);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function tearDown()
-    {
-        $this->domainManager->removeDomains(['www.bing.com', 'www.google.com', 'www.yahoo.com']);
     }
 
     /**
@@ -133,7 +114,7 @@ class DownloadableTest extends \PHPUnit\Framework\TestCase
         $downloadableSamples        = $product->getDownloadableSamples();
 
         //TODO: Track Fields: id, link_id, link_file and sample_file)
-        $expectedLinks = [
+        $expectedLinks= [
             'file' => [
                 'title' => 'TEST Import Link Title File',
                 'sort_order' => '78',
@@ -175,7 +156,7 @@ class DownloadableTest extends \PHPUnit\Framework\TestCase
         }
 
         //TODO: Track Fields: id, sample_id and sample_file)
-        $expectedSamples = [
+        $expectedSamples= [
             'file' => [
                 'title' => 'TEST Import Sample File',
                 'sort_order' => '178',

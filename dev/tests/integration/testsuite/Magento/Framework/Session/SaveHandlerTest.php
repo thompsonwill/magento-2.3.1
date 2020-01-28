@@ -6,47 +6,18 @@
 namespace Magento\Framework\Session;
 
 use Magento\Framework\App\DeploymentConfig;
-use Magento\Framework\Exception\SessionException;
-use Magento\Framework\Phrase;
 use Magento\Framework\Session\Config\ConfigInterface;
+use Magento\Framework\Session\SaveHandler;
 use Magento\Framework\App\ObjectManager;
 
-class SaveHandlerTest extends \PHPUnit\Framework\TestCase
+class SaveHandlerTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var \Magento\TestFramework\ObjectManager
-     */
-    private $objectManager;
+    /** @var string Original session.save_handler ini config value */
+    private $originalSaveHandler;
 
-    /**
-     * @var DeploymentConfig|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $deploymentConfigMock;
-
-    /**
-     * @var SaveHandlerFactory|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $saveHandlerFactoryMock;
-
-    /**
-     * @inheritdoc
-     */
-    protected function setUp()
+    public function setUp()
     {
-        $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
-        $this->deploymentConfigMock = $this->createMock(DeploymentConfig::class);
-        $this->objectManager->addSharedInstance($this->deploymentConfigMock, DeploymentConfig::class);
-        $this->saveHandlerFactoryMock = $this->createMock(SaveHandlerFactory::class);
-        $this->objectManager->addSharedInstance($this->saveHandlerFactoryMock, SaveHandlerFactory::class);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function tearDown()
-    {
-        $this->objectManager->removeSharedInstance(DeploymentConfig::class);
-        $this->objectManager->removeSharedInstance(SaveHandlerFactory::class);
+        $this->originalSaveHandler = ini_get('session.save_handler');
     }
 
     /**
@@ -54,99 +25,64 @@ class SaveHandlerTest extends \PHPUnit\Framework\TestCase
      *
      * @dataProvider saveHandlerProvider
      * @param string $deploymentConfigHandler
-     * @return void
+     * @param string $iniHandler
      */
-    public function testConstructor($deploymentConfigHandler)
+    public function testSetSaveHandler($deploymentConfigHandler, $iniHandler)
     {
-        $expected = $this->getExpectedSaveHandler($deploymentConfigHandler, ini_get('session.save_handler'));
+        $this->markTestSkipped('MAGETWO-56529');
+        // Set expected session.save_handler config
+        if ($deploymentConfigHandler) {
+            if ($deploymentConfigHandler !== 'files') {
+                $expected = 'user';
+            } else {
+                $expected = $deploymentConfigHandler;
+            }
+        } else if ($iniHandler) {
+            $expected = $iniHandler;
+        } else {
+            $expected = SaveHandlerInterface::DEFAULT_HANDLER;
+        }
 
-        $this->deploymentConfigMock->method('get')
-            ->willReturnCallback(function ($configPath) use ($deploymentConfigHandler) {
-                switch ($configPath) {
-                    case Config::PARAM_SESSION_SAVE_METHOD:
-                        return $deploymentConfigHandler;
-                    case Config::PARAM_SESSION_CACHE_LIMITER:
-                        return 'private_no_expire';
-                    case Config::PARAM_SESSION_SAVE_PATH:
-                        return 'explicit_save_path';
-                    default:
-                        return null;
-                }
-            });
+        // Set ini configuration
+        if ($iniHandler) {
+            ini_set('session.save_handler', $iniHandler);
+        }
 
-        $this->saveHandlerFactoryMock->expects($this->once())
-            ->method('create')
-            ->with($expected);
-        $sessionConfig = $this->objectManager->create(ConfigInterface::class);
-        $this->objectManager->create(SaveHandler::class, ['sessionConfig' => $sessionConfig]);
+        /** @var DeploymentConfig | \PHPUnit_Framework_MockObject_MockObject $deploymentConfigMock */
+        $deploymentConfigMock = $this->getMockBuilder(DeploymentConfig::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $deploymentConfigMock->expects($this->once())
+            ->method('get')
+            ->with(Config::PARAM_SESSION_SAVE_METHOD, SaveHandlerInterface::DEFAULT_HANDLER)
+            ->willReturn($deploymentConfigHandler ?: SaveHandlerInterface::DEFAULT_HANDLER);
+
+        new SaveHandler(
+            ObjectManager::getInstance()->get(SaveHandlerFactory::class),
+            $deploymentConfigMock
+        );
 
         // Test expectation
         $this->assertEquals(
             $expected,
-            $sessionConfig->getOption('session.save_handler')
+            ObjectManager::getInstance()->get(ConfigInterface::class)->getOption('session.save_handler')
         );
     }
 
-    /**
-     * @return array
-     */
-    public function saveHandlerProvider(): array
+    public function tearDown()
     {
-        return [
-            ['db'],
-            ['redis'],
-            ['files'],
-            [false],
-        ];
-    }
-
-    /**
-     * Retrieve expected session.save_handler.
-     *
-     * @param string $deploymentConfigHandler
-     * @param string $iniHandler
-     * @return string
-     */
-    private function getExpectedSaveHandler($deploymentConfigHandler, $iniHandler)
-    {
-        if ($deploymentConfigHandler) {
-            return $deploymentConfigHandler;
-        } elseif ($iniHandler) {
-            return $iniHandler;
-        } else {
-            return SaveHandlerInterface::DEFAULT_HANDLER;
+        if (isset($this->originalSaveHandler)) {
+            ini_set('session.save_handler', $this->originalSaveHandler);
         }
     }
 
-    /**
-     * @return void
-     */
-    public function testConstructorWithException()
+    public function saveHandlerProvider()
     {
-        $this->deploymentConfigMock->method('get')
-            ->willReturnCallback(function ($configPath) {
-                switch ($configPath) {
-                    case Config::PARAM_SESSION_SAVE_METHOD:
-                        return 'db';
-                    case Config::PARAM_SESSION_CACHE_LIMITER:
-                        return 'private_no_expire';
-                    case Config::PARAM_SESSION_SAVE_PATH:
-                        return 'explicit_save_path';
-                    default:
-                        return null;
-                }
-            });
-
-        $this->saveHandlerFactoryMock->expects($this->at(0))
-            ->method('create')
-            ->willThrowException(new SessionException(new Phrase('Session Exception')));
-        $this->saveHandlerFactoryMock->expects($this->at(1))
-            ->method('create')
-            ->with(SaveHandlerInterface::DEFAULT_HANDLER);
-        $sessionConfig = $this->objectManager->create(ConfigInterface::class);
-        $this->objectManager->create(SaveHandler::class, ['sessionConfig' => $sessionConfig]);
-
-        // Test expectation
-        $this->assertEquals('db', $sessionConfig->getOption('session.save_handler'));
+        return [
+            ['db', false],
+            ['db', 'files'],
+            [false, 'files'],
+            [false, false],
+        ];
     }
 }

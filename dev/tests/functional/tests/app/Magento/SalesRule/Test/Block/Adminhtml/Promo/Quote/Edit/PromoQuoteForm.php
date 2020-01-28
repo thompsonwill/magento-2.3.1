@@ -8,6 +8,7 @@ namespace Magento\SalesRule\Test\Block\Adminhtml\Promo\Quote\Edit;
 use Magento\Ui\Test\Block\Adminhtml\FormSections;
 use Magento\Mtf\Client\Element\SimpleElement;
 use Magento\Mtf\Fixture\FixtureInterface;
+use Magento\SalesRule\Test\Block\Adminhtml\Promo\Quote\Edit\Section\BlockPromoSalesRuleEditTabCoupons;
 
 /**
  * Sales rule edit form.
@@ -29,13 +30,6 @@ class PromoQuoteForm extends FormSections
     protected $waitForSelectorVisible = false;
 
     /**
-     * Selector of name element on the form.
-     *
-     * @var string
-     */
-    private $nameElementSelector = 'input[name=name]';
-
-    /**
      * Fill form with sections.
      *
      * @param FixtureInterface $fixture
@@ -45,13 +39,29 @@ class PromoQuoteForm extends FormSections
      */
     public function fill(FixtureInterface $fixture, SimpleElement $element = null, array $replace = null)
     {
-        $this->waitForElementNotVisible($this->waitForSelector);
-        $this->waitForElementVisible($this->nameElementSelector);
         $sections = $this->getFixtureFieldsByContainers($fixture);
         if ($replace) {
             $sections = $this->prepareData($sections, $replace);
         }
         $this->fillContainers($sections, $element);
+    }
+
+    /**
+     * Generate coupons for Cart Rule.
+     *
+     * @param array $generateSettings
+     *
+     * @return void
+     */
+    public function generateCoupons(array $generateSettings)
+    {
+        $this->fillContainers([
+            'block_promo_sales_rule_edit_tab_coupons' => $generateSettings
+        ]);
+
+        /** @var BlockPromoSalesRuleEditTabCoupons $couponSection */
+        $couponSection = $this->getSection('block_promo_sales_rule_edit_tab_coupons');
+        $couponSection->pressGenerateButton();
     }
 
     /**
