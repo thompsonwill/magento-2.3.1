@@ -245,7 +245,7 @@ class AttributeTest extends \Magento\TestFramework\TestCase\AbstractBackendContr
      *
      * @return array
      */
-    private function getLargeOptionsSetAttributeData()
+    private function getLargeOptionsSetAttributeData(): array
     {
         return [
             'frontend_label' => [
@@ -286,6 +286,7 @@ class AttributeTest extends \Magento\TestFramework\TestCase\AbstractBackendContr
 
     /**
      * Test attribute saving with large amount of options exceeding maximum allowed by max_input_vars limit.
+     *
      * @return void
      */
     public function testLargeOptionsDataSet()
@@ -393,7 +394,7 @@ class AttributeTest extends \Magento\TestFramework\TestCase\AbstractBackendContr
             'used_in_product_listing' => '1',
             'used_for_sort_by' => '0',
             'apply_to' => ['simple'],
-            'frontend_label' => [\Magento\Store\Model\Store::DEFAULT_STORE_ID => 'string to translate'],
+            'frontend_label' => [\Magento\Store\Model\Store::DEFAULT_STORE_ID => 'string to translate']
         ];
     }
 }

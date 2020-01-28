@@ -272,7 +272,7 @@ class ConditionsElement extends SimpleElement
         $this->addCondition($condition['type'], $context);
         $createdCondition = $context->find($this->created, Locator::SELECTOR_XPATH);
         $this->waitForCondition($createdCondition);
-        $this->fillCondition($condition['rules'], $createdCondition, $condition['type']);
+        $this->fillCondition($condition['rules'], $createdCondition);
     }
 
     /**
@@ -319,14 +319,13 @@ class ConditionsElement extends SimpleElement
      *
      * @param array $rules
      * @param ElementInterface $element
-     * @param string|null $type
      * @return void
      * @throws \Exception
      *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    protected function fillCondition(array $rules, ElementInterface $element, $type = null)
+    protected function fillCondition(array $rules, ElementInterface $element)
     {
         $this->resetKeyParam();
         foreach ($rules as $rule) {
@@ -347,7 +346,7 @@ class ConditionsElement extends SimpleElement
 
                     if ($this->fillGrid($rule, $param)) {
                         $isSet = true;
-                    } elseif ($this->fillSelect($rule, $param, $type)) {
+                    } elseif ($this->fillSelect($rule, $param)) {
                         $isSet = true;
                     } elseif ($this->fillText($rule, $param)) {
                         $isSet = true;
@@ -404,15 +403,11 @@ class ConditionsElement extends SimpleElement
      *
      * @param string $rule
      * @param ElementInterface $param
-     * @param string|null $type
      * @return bool
      */
-    protected function fillSelect($rule, ElementInterface $param, $type = null)
+    protected function fillSelect($rule, ElementInterface $param)
     {
-        //Avoid confusion between regions like: "Baja California" and "California".
-        $value = strpos($type, 'State/Province') === false
-            ? $param->find('select', Locator::SELECTOR_TAG_NAME, 'select')
-            : $param->find('select', Locator::SELECTOR_TAG_NAME, 'selectstate');
+        $value = $param->find('select', Locator::SELECTOR_TAG_NAME, 'select');
         if ($value->isVisible()) {
             $value->setValue($rule);
             $this->click();

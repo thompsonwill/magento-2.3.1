@@ -8,7 +8,6 @@ namespace Magento\Sales\Controller\Adminhtml\Order\Create;
 use Magento\Backend\Model\Session\Quote;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\App\Request\Http;
 use Magento\Framework\Data\Form\FormKey;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Message\MessageInterface;
@@ -79,7 +78,7 @@ class SaveTest extends AbstractBackendController
                 'email' => $email,
             ]
         ];
-        $this->getRequest()->setMethod(Http::METHOD_POST);
+        $this->getRequest()->setMethod('POST');
         $this->getRequest()->setPostValue(['order' => $data]);
 
         /** @var OrderService|MockObject $orderService */
@@ -112,7 +111,7 @@ class SaveTest extends AbstractBackendController
      *
      * @return void
      */
-    public function testSendEmailOnOrderSave(): void
+    public function testSendEmailOnOrderSave()
     {
         $this->prepareRequest(['send_confirmation' => true]);
         $this->dispatch('backend/sales/order_create/save');
@@ -142,7 +141,7 @@ class SaveTest extends AbstractBackendController
         );
 
         $this->assertEquals($message->getSubject(), $subject);
-        $this->assertThat($message->getRawMessage(), $assert);
+        $this->assertThat($message->getBody()->getParts()[0]->getRawContent(), $assert);
     }
 
     /**
@@ -151,7 +150,7 @@ class SaveTest extends AbstractBackendController
      * @param string $reservedOrderId
      * @return \Magento\Quote\Api\Data\CartInterface
      */
-    private function getQuote(string $reservedOrderId): \Magento\Quote\Api\Data\CartInterface
+    private function getQuote($reservedOrderId)
     {
         /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
         $searchCriteriaBuilder = $this->_objectManager->get(SearchCriteriaBuilder::class);
@@ -161,7 +160,6 @@ class SaveTest extends AbstractBackendController
         /** @var CartRepositoryInterface $quoteRepository */
         $quoteRepository = $this->_objectManager->get(CartRepositoryInterface::class);
         $items = $quoteRepository->getList($searchCriteria)->getItems();
-
         return array_pop($items);
     }
 
@@ -202,7 +200,7 @@ class SaveTest extends AbstractBackendController
      * @param array $params
      * @return void
      */
-    private function prepareRequest(array $params = []): void
+    private function prepareRequest(array $params = [])
     {
         $quote = $this->getQuote('guest_quote');
         $session = $this->_objectManager->get(Quote::class);

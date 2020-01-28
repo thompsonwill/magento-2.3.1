@@ -121,11 +121,6 @@ class UpdateAdminUserRoleEntityTest extends Injectable
      */
     public function tearDown()
     {
-        sleep(3);
-        $modalMessage = $this->dashboard->getModalMessage();
-        if ($modalMessage->isVisible()) {
-            $modalMessage->acceptAlert();
-        }
         $this->dashboard->getAdminPanelHeader()->logOut();
     }
 }

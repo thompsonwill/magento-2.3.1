@@ -72,7 +72,7 @@ class ConfigSetCommandTest extends \PHPUnit\Framework\TestCase
             ->expects($this->once())
             ->method('process')
             ->with(['db-host' => 'host']);
-        $this->checkInteraction('Y');
+        $this->checkInteraction(true);
     }
 
     public function testExecuteInteractiveWithNo()
@@ -85,13 +85,13 @@ class ConfigSetCommandTest extends \PHPUnit\Framework\TestCase
             ->expects($this->once())
             ->method('process')
             ->with([]);
-        $this->checkInteraction('n');
+        $this->checkInteraction(false);
     }
 
     /**
      * Checks interaction with users on CLI
      *
-     * @param string $interactionType
+     * @param bool $interactionType
      * @return void
      */
     private function checkInteraction($interactionType)
@@ -113,7 +113,7 @@ class ConfigSetCommandTest extends \PHPUnit\Framework\TestCase
 
         $commandTester = new CommandTester($this->command);
         $commandTester->execute(['--db-host' => 'host']);
-        if (strtolower($interactionType) === 'y') {
+        if ($interactionType) {
             $message = 'You saved the new configuration.' . PHP_EOL;
         } else {
             $message = 'You made no changes to the configuration.'.PHP_EOL;

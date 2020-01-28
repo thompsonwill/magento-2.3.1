@@ -35,8 +35,6 @@ class MassDeleteTest extends AbstractBackendController
 
     /**
      * @inheritDoc
-     *
-     * @throws \Magento\Framework\Exception\AuthenticationException
      */
     protected function setUp()
     {
@@ -110,9 +108,13 @@ class MassDeleteTest extends AbstractBackendController
      */
     private function massDeleteAssertions($ids, Constraint $constraint, $messageType)
     {
+        /** @var \Magento\Framework\Data\Form\FormKey $formKey */
+        $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+
         $requestData = [
             'selected' => $ids,
             'namespace' => 'customer_listing',
+            'form_key' => $formKey->getFormKey()
         ];
 
         $this->getRequest()->setParams($requestData)->setMethod(HttpRequest::METHOD_POST);
@@ -134,7 +136,7 @@ class MassDeleteTest extends AbstractBackendController
         return [
             [
                 'ids' => [],
-                'constraint' => self::equalTo(['An item needs to be selected. Select and try again.']),
+                'constraint' => self::equalTo(['Please select item(s).']),
                 'messageType' => MessageInterface::TYPE_ERROR,
             ],
             [
@@ -144,7 +146,7 @@ class MassDeleteTest extends AbstractBackendController
             ],
             [
                 'ids' => null,
-                'constraint' => self::equalTo(['An item needs to be selected. Select and try again.']),
+                'constraint' => self::equalTo(['Please select item(s).']),
                 'messageType' => MessageInterface::TYPE_ERROR,
             ]
         ];

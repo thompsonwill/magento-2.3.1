@@ -10,14 +10,16 @@ namespace Magento\Dhl\Model;
 use Magento\Framework\HTTP\ZendClient;
 use Magento\Framework\HTTP\ZendClientFactory;
 use Magento\Framework\Simplexml\Element;
-use Magento\Shipping\Model\Tracking\Result\Error;
 use Magento\Shipping\Model\Tracking\Result\Status;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
+/**
+ * Test DHL Shipping Method.
+ */
 class CarrierTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var \Magento\Dhl\Model\Carrier
+     * @var Carrier
      */
     private $dhlCarrier;
 
@@ -31,28 +33,36 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
      */
     private $httpResponseMock;
 
+    /**
+     * @inheritdoc
+     */
     protected function setUp()
     {
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->dhlCarrier = $objectManager->create(
-            \Magento\Dhl\Model\Carrier::class,
+            Carrier::class,
             ['httpClientFactory' => $this->getHttpClientFactory()]
         );
     }
 
     /**
+     * @magentoDbIsolation enabled
+     *
      * @magentoConfigFixture default_store carriers/dhl/id CustomerSiteID
      * @magentoConfigFixture default_store carriers/dhl/password CustomerPassword
-     * @param string[] $trackingNumbers
+     *
+     * @param array $trackingNumbers
      * @param string $responseXml
-     * @param $expectedTrackingData
+     * @param array $expectedTrackingData
      * @param string $expectedRequestXml
      * @dataProvider getTrackingDataProvider
+     *
+     * @return void
      */
     public function testGetTracking(
-        $trackingNumbers,
+        array $trackingNumbers,
         string $responseXml,
-        $expectedTrackingData,
+        array $expectedTrackingData,
         string $expectedRequestXml = ''
     ) {
         $this->httpResponseMock->method('getBody')
@@ -68,10 +78,11 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get tracking data provider
+     * Get tracking data provider.
+     *
      * @return array
      */
-    public function getTrackingDataProvider() : array
+    public function getTrackingDataProvider(): array
     {
         $expectedMultiAWBRequestXml = file_get_contents(__DIR__ . '/../_files/TrackingRequest_MultipleAWB.xml');
         $multiAWBResponseXml = file_get_contents(__DIR__ . '/../_files/TrackingResponse_MultipleAWB.xml');
@@ -89,8 +100,8 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
                     'activity' => 'SD Shipment information received',
                     'deliverydate' => '2017-12-25',
                     'deliverytime' => '14:38:00',
-                    'deliverylocation' => 'BEIJING-CHN [PEK]'
-                ]
+                    'deliverylocation' => 'BEIJING-CHN [PEK]',
+                ],
             ],
             'weight' => '0.5 K',
         ];
@@ -104,8 +115,8 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
                     'activity' => 'SD Shipment information received',
                     'deliverydate' => '2017-12-24',
                     'deliverytime' => '13:35:00',
-                    'deliverylocation' => 'HONG KONG-HKG [HKG]'
-                ]
+                    'deliverylocation' => 'HONG KONG-HKG [HKG]',
+                ],
             ],
             'weight' => '2.0 K',
         ];
@@ -119,8 +130,8 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
                     'activity' => 'SD Shipment information received',
                     'deliverydate' => '2017-12-24',
                     'deliverytime' => '04:12:00',
-                    'deliverylocation' => 'BIRMINGHAM-GBR [BHX]'
-                ]
+                    'deliverylocation' => 'BIRMINGHAM-GBR [BHX]',
+                ],
             ],
             'weight' => '0.12 K',
         ];
@@ -128,7 +139,7 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
             'carrier' => 'dhl',
             'carrier_title' => 'DHL',
             'tracking' => 4781585060,
-            'error_message' => __('Unable to retrieve tracking')
+            'error_message' => __('Unable to retrieve tracking'),
         ];
         $expectedTrackingDataE = [
             'carrier' => 'dhl',
@@ -142,36 +153,37 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
                     "ShipperReference" must match
                     "(ReferenceID,ReferenceType?)". at line
                     16, column 22'
-            )
+            ),
         ];
+
         return [
             'multi-AWB' => [
                 ['4781584780', '4781585060', '5702254250'],
                 $multiAWBResponseXml,
                 [$expectedTrackingDataA, $expectedTrackingDataB, $expectedTrackingDataC],
-                $expectedMultiAWBRequestXml
+                $expectedMultiAWBRequestXml,
             ],
             'single-AWB' => [
                 ['4781585060'],
                 $singleAWBResponseXml,
                 [$expectedTrackingDataB],
-                $expectedSingleAWBRequestXml
+                $expectedSingleAWBRequestXml,
             ],
             'single-AWB-no-data' => [
                 ['4781585061'],
                 $singleNoDataResponseXml,
-                [$expectedTrackingDataD]
+                [$expectedTrackingDataD],
             ],
             'failed-response' => [
                 ['4781585060-failed'],
                 $failedResponseXml,
-                [$expectedTrackingDataE]
-            ]
+                [$expectedTrackingDataE],
+            ],
         ];
     }
 
     /**
-     * Get mocked Http Client Factory
+     * Get mocked Http Client Factory.
      *
      * @return MockObject
      */
@@ -197,19 +209,21 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Assert request
+     * Assert request.
      *
      * @param string $expectedRequestXml
      * @param string $requestXml
+     *
+     * @return void
      */
-    private function assertRequest(string $expectedRequestXml, string $requestXml): void
+    private function assertRequest(string $expectedRequestXml, string $requestXml)
     {
         $expectedRequestElement = new Element($expectedRequestXml);
         $requestElement = new Element($requestXml);
         $requestMessageTime = $requestElement->Request->ServiceHeader->MessageTime->__toString();
-        $this->assertEquals(
-            1,
-            preg_match("/\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\+\d{2}\:\d{2}/", $requestMessageTime)
+        $this->assertRegexp(
+            "/\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\+\d{2}\:\d{2}/",
+            $requestMessageTime
         );
         $expectedRequestElement->Request->ServiceHeader->MessageTime = $requestMessageTime;
         $messageReference = $requestElement->Request->ServiceHeader->MessageReference->__toString();
@@ -221,21 +235,18 @@ class CarrierTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Assert tracking
+     * Assert tracking.
      *
      * @param array|null $expectedTrackingData
      * @param Status[]|null $trackingResults
+     *
      * @return void
      */
-    private function assertTrackingResult($expectedTrackingData, $trackingResults): void
+    private function assertTrackingResult($expectedTrackingData, $trackingResults)
     {
-        if (null === $expectedTrackingData) {
-            $this->assertNull($trackingResults);
-        } else {
-            $ctr = 0;
-            foreach ($trackingResults as $trackingResult) {
-                $this->assertEquals($expectedTrackingData[$ctr++], $trackingResult->getData());
-            }
+        $ctr = 0;
+        foreach ($trackingResults as $trackingResult) {
+            $this->assertEquals($expectedTrackingData[$ctr++], $trackingResult->getData());
         }
     }
 }

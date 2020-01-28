@@ -53,12 +53,13 @@ class OnePageCheckoutTest extends Scenario
     private $envWhitelist;
 
     /**
-     * Injection data.
+     * Prepare data.
      *
      * @param EnvWhitelist $envWhitelist
      */
-    public function __inject(EnvWhitelist $envWhitelist)
-    {
+    public function __prepare(
+        EnvWhitelist $envWhitelist
+    ) {
         $this->envWhitelist = $envWhitelist;
     }
 
@@ -73,11 +74,6 @@ class OnePageCheckoutTest extends Scenario
         $this->executeScenario();
     }
 
-    /**
-     * Clean data after running test.
-     *
-     * @return void
-     */
     protected function tearDown()
     {
         $this->envWhitelist->removeHost('example.com');

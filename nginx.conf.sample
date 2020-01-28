@@ -9,7 +9,6 @@
 #    listen 80;
 #    server_name mage.dev;
 #    set $MAGE_ROOT /var/www/magento2;
-#    set $MAGE_DEBUG_SHOW_ARGS 1;
 #    include /vagrant/magento2/nginx.conf.sample;
 # }
 #
@@ -33,7 +32,6 @@ autoindex off;
 charset UTF-8;
 error_page 404 403 = /errors/404.php;
 #add_header "X-UA-Compatible" "IE=Edge";
-
 
 # Deny access to sensitive files
 location /.user.ini {
@@ -106,7 +104,7 @@ location /static/ {
 
     # Remove signature of the static files that is used to overcome the browser cache
     location ~ ^/static/version {
-        rewrite ^/static/(version\d*/)?(.*)$ /static/$2 last;
+        rewrite ^/static/(version[^/]+/)?(.*)$ /static/$2 last;
     }
 
     location ~* \.(ico|jpg|jpeg|png|gif|svg|js|css|swf|eot|ttf|otf|woff|woff2|json)$ {
@@ -115,7 +113,7 @@ location /static/ {
         expires +1y;
 
         if (!-f $request_filename) {
-            rewrite ^/static/(version\d*/)?(.*)$ /static.php?resource=$2 last;
+            rewrite ^/static/?(.*)$ /static.php?resource=$1 last;
         }
     }
     location ~* \.(zip|gz|gzip|bz2|csv|xml)$ {
@@ -124,11 +122,11 @@ location /static/ {
         expires    off;
 
         if (!-f $request_filename) {
-           rewrite ^/static/(version\d*/)?(.*)$ /static.php?resource=$2 last;
+           rewrite ^/static/?(.*)$ /static.php?resource=$1 last;
         }
     }
     if (!-f $request_filename) {
-        rewrite ^/static/(version\d*/)?(.*)$ /static.php?resource=$2 last;
+        rewrite ^/static/?(.*)$ /static.php?resource=$1 last;
     }
     add_header X-Frame-Options "SAMEORIGIN";
 }

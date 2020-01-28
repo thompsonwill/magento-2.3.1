@@ -26,7 +26,7 @@ class SaveTest extends AbstractShipmentControllerTest
     /**
      * @return void
      */
-    public function testSendEmailOnShipmentSave(): void
+    public function testSendEmailOnShipmentSave()
     {
         $order = $this->prepareRequest(['shipment' => ['send_email' => true]]);
         $this->dispatch('backend/admin/order_shipment/save');
@@ -51,7 +51,7 @@ class SaveTest extends AbstractShipmentControllerTest
         );
 
         $this->assertEquals($message->getSubject(), $subject);
-        $this->assertThat($message->getRawMessage(), $messageConstraint);
+        $this->assertThat($message->getBody()->getParts()[0]->getRawContent(), $messageConstraint);
     }
 
     /**

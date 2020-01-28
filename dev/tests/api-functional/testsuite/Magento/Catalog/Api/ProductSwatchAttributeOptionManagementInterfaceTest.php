@@ -42,12 +42,9 @@ class ProductSwatchAttributeOptionManagementInterfaceTest extends WebapiAbstract
             ]
         );
 
-        $this->assertNotNull($response);
+        $this->assertTrue($response);
         $updatedData = $this->getAttributeOptions($testAttributeCode);
         $lastOption = array_pop($updatedData);
-        foreach ($updatedData as $option) {
-            $this->assertNotContains('id', $option['value']);
-        }
         $this->assertEquals(
             $optionData[AttributeOptionInterface::STORE_LABELS][0][AttributeOptionLabelInterface::LABEL],
             $lastOption['label']

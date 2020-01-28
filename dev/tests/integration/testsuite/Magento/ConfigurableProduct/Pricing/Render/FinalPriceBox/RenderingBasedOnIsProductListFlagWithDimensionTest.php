@@ -3,8 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
-
 namespace Magento\ConfigurableProduct\Pricing\Render\FinalPriceBox;
 
 use Magento\Catalog\Api\Data\ProductInterface;
@@ -18,7 +16,7 @@ use Magento\TestFramework\Helper\Bootstrap;
 
 /**
  * @magentoDbIsolation disabled
- * @magentoIndexerDimensionMode catalog_product_price website_and_customer_group
+ * @--magentoIndexerDimensionMode catalog_product_price website_and_customer_group
  * @group indexer_dimension
  * Test price rendering according to is_product_list flag for Configurable product
  */
@@ -44,9 +42,6 @@ class RenderingBasedOnIsProductListFlagWithDimensionTest extends \PHPUnit\Framew
      */
     private $finalPriceBox;
 
-    /**
-     * Set up
-     */
     protected function setUp()
     {
         $productRepository = Bootstrap::getObjectManager()->get(ProductRepositoryInterface::class);
@@ -87,6 +82,9 @@ class RenderingBasedOnIsProductListFlagWithDimensionTest extends \PHPUnit\Framew
      */
     public function testRenderingByDefault()
     {
+        $this->markTestSkipped(
+            'Skipped because of MAGETWO-99136'
+        );
         $html = $this->finalPriceBox->toHtml();
         self::assertContains('5.99', $html);
         $this->assertGreaterThanOrEqual(
@@ -122,6 +120,9 @@ class RenderingBasedOnIsProductListFlagWithDimensionTest extends \PHPUnit\Framew
      */
     public function testRenderingAccordingToIsProductListFlag($flag, $count)
     {
+        $this->markTestSkipped(
+            'Skipped because of MAGETWO-99136'
+        );
         $this->finalPriceBox->setData('is_product_list', $flag);
         $html = $this->finalPriceBox->toHtml();
         self::assertContains('5.99', $html);

@@ -8,9 +8,6 @@ namespace Magento\Setup\Test\Unit\Model;
 
 use Magento\Setup\Model\DataGenerator;
 
-/**
- * Class DataGeneratorTest
- */
 class DataGeneratorTest extends \PHPUnit\Framework\TestCase
 {
 

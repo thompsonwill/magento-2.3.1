@@ -30,6 +30,7 @@ class OrderListTest extends WebapiAbstract
     }
 
     /**
+     * @return void
      * @magentoApiDataFixture Magento/Sales/_files/order_list.php
      */
     public function testOrderList()
@@ -59,6 +60,7 @@ class OrderListTest extends WebapiAbstract
     }
 
     /**
+     * @return void
      * @magentoApiDataFixture Magento/Sales/_files/order_list_with_tax.php
      */
     public function testOrderListExtensionAttributes()
@@ -82,7 +84,7 @@ class OrderListTest extends WebapiAbstract
 
         $expectedTax = [
             'code' => 'US-NY-*-Rate 1',
-            'type' => 'shipping'
+            'type' => 'shipping',
         ];
         $appliedTaxes = $result['items'][0]['extension_attributes']['applied_taxes'];
         $this->assertEquals($expectedTax['code'], $appliedTaxes[0]['code']);

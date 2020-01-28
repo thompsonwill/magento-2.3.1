@@ -26,7 +26,7 @@ class ConfigTest extends \Magento\TestFramework\TestCase\AbstractBackendControll
      * @param array $groups
      * @return void
      */
-    public function testSaveMerchantCountry(string $section, array $groups): void
+    public function testSaveMerchantCountry(string $section, array $groups)
     {
         /** @var ScopeConfigInterface $scopeConfig */
         $scopeConfig = Bootstrap::getObjectManager()->get(ScopeConfigInterface::class);

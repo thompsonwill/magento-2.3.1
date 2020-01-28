@@ -11,6 +11,7 @@ use Magento\Framework\Phrase;
  * @codingStandardsIgnoreStart
  */
 class TestPhrases
+//@codingStandardsIgnoreEnd
 {
     public function awesomeFunction()
     {

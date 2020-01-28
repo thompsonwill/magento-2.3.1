@@ -13,59 +13,51 @@ define([
         var injector = new Squire(),
             mocks = {
                 'mage/url': {
-                    /** Method stub. */
                     build: jasmine.createSpy()
                 },
-                'Magento_Ui/js/model/messageList': jasmine.createSpy('globalList')
+                'consoleLogger': jasmine.createSpy('logger')
             },
-            model;
+            model,
+            loggerModel;
 
         beforeEach(function (done) {
             injector.mock(mocks);
             injector.require([
-                'Magento_Checkout/js/model/error-processor'
-            ], function (processor) {
+                'Magento_Checkout/js/model/error-processor',
+                'consoleLogger'
+            ], function (processor, logger) {
                 model = processor;
+                loggerModel = logger;
 
                 done();
             });
         });
 
+        afterEach(function () {
+            try {
+                injector.clean();
+                injector.remove();
+            } catch (e) {}
+        });
+
         describe('Check process method', function () {
-            it('check on success response with valid response data', function () {
-                var messageObject = {
-                        message: 'Valid error message!'
-                    },
-                    messageContainer = jasmine.createSpyObj('globalMessageList', ['addErrorMessage']);
-
-                model.process({
-                    status: 200,
-                    responseText: JSON.stringify(messageObject)
-                }, messageContainer);
-                expect(messageContainer.addErrorMessage).toHaveBeenCalledWith(messageObject);
-            });
-
             it('check on success response with invalid response data', function () {
-                var messageContainer = jasmine.createSpyObj('globalMessageList', ['addErrorMessage']);
+                var messageContainer = jasmine.createSpyObj('globalMessageList', ['addErrorMessage']),
+                    messageObject = {
+                        message: 'Something went wrong with your request. Please try again later.'
+                    };
+
+                spyOn(loggerModel, 'error');
 
                 model.process({
                     status: 200,
                     responseText: ''
                 }, messageContainer);
+
+                expect(loggerModel.error).toHaveBeenCalled();
+
                 expect(messageContainer.addErrorMessage)
-                    .toHaveBeenCalledWith('Something went wrong with your request. Please try again later.');
-            });
-
-            it('check on failed status', function () {
-                var messageContainer = jasmine.createSpyObj('globalMessageList', ['addErrorMessage']);
-
-                spyOn(window.location, 'replace').and.callFake(function () {});
-                model.process({
-                    status: 401,
-                    responseText: ''
-                }, messageContainer);
-                expect(mocks['mage/url'].build)
-                    .toHaveBeenCalled();
+                    .toHaveBeenCalledWith(messageObject);
             });
         });
     });

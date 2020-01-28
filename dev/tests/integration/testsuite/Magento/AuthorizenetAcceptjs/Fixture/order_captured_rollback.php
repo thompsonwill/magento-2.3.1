@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\TestFramework\ObjectManager;
 
@@ -18,11 +19,14 @@ $searchCriteria = $searchCriteriaBuilder->addFilter('increment_id', '100000002')
 
 /** @var OrderRepositoryInterface $orderRepository */
 $orderRepository = $objectManager->get(OrderRepositoryInterface::class);
-$items = $orderRepository->getList($searchCriteria)
-    ->getItems();
+$items = $orderRepository->getList($searchCriteria)->getItems();
+$item = reset($items);
 
-foreach ($items as $item) {
-    $orderRepository->delete($item);
+if ($item !== false) {
+    try {
+        $orderRepository->delete($item);
+    } catch (NoSuchEntityException $e) {
+    }
 }
 
 require __DIR__ . '/../../../Magento/Catalog/_files/product_simple_rollback.php';

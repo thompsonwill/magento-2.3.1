@@ -27,7 +27,7 @@ class AddCommentTest extends AbstractShipmentControllerTest
     /**
      * @return void
      */
-    public function testSendEmailOnShipmentCommentAdd(): void
+    public function testSendEmailOnShipmentCommentAdd()
     {
         $comment = 'Test Shipment Comment';
         $order = $this->prepareRequest(
@@ -54,7 +54,7 @@ class AddCommentTest extends AbstractShipmentControllerTest
         );
 
         $this->assertEquals($message->getSubject(), $subject);
-        $this->assertThat($message->getRawMessage(), $messageConstraint);
+        $this->assertThat($message->getBody()->getParts()[0]->getRawContent(), $messageConstraint);
     }
 
     /**

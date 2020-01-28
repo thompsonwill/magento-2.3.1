@@ -38,15 +38,11 @@ $request->setData(
 );
 
 $quote->setStoreId(1)
-    ->setIsActive(
-        true
-    )->setIsMultiShipping(
-        false
-    )->setReservedOrderId(
-        'test_order_with_configurable_product'
-    )->setEmail(
-        'store@example.com'
-    )->addProduct(
+    ->setIsActive(true)
+    ->setIsMultiShipping(false)
+    ->setReservedOrderId('test_order_with_configurable_product')
+    ->setEmail('store@example.com')
+    ->addProduct(
         $productRepository->get('configurable'),
         $request
     );

@@ -320,10 +320,8 @@ class ConfigurableProductsFixture extends Fixture
     {
         $attributeSetClosure = function ($index) use ($defaultAttributeSets) {
             $attributeSetAmount = count(array_keys($defaultAttributeSets));
-            // phpcs:ignore
             mt_srand($index);
 
-            // phpcs:ignore Magento2.Functions.DiscouragedFunction
             return $attributeSetAmount > ($index - 1) % (int)$this->fixtureModel->getValue('categories', 30)
                 ? array_keys($defaultAttributeSets)[mt_rand(0, $attributeSetAmount - 1)]
                 : 'Default';
@@ -441,7 +439,7 @@ class ConfigurableProductsFixture extends Fixture
     }
 
     /**
-     * Get default attribute sets with attributes.
+     * Get default attribute sets with attributes
      *
      * @see config/attributeSets.xml
      *
@@ -561,7 +559,7 @@ class ConfigurableProductsFixture extends Fixture
 
         if (count($skuPull) !== count(array_unique($skuPull))) {
             throw new ValidatorException(
-                __("The configurable product's SKU pattern must be unique in an attribute set.")
+                __('Sku pattern for configurable product must be unique per attribute set')
             );
         }
 
@@ -572,7 +570,7 @@ class ConfigurableProductsFixture extends Fixture
      * Prepare configuration.
      *
      * If amount of configurable products set in profile then return predefined attribute sets
-     * else return configuration from profile.
+     * else return configuration from profile
      *
      * @param array $defaultAttributeSets
      * @return array
@@ -602,9 +600,7 @@ class ConfigurableProductsFixture extends Fixture
                 }
             }
         } else {
-            throw new ValidatorException(
-                __('The configurable product config is invalid. Verify the product and try again.')
-            );
+            throw new ValidatorException(__('Configurable product config is invalid'));
         }
 
         return $configurableConfigs;
@@ -743,8 +739,6 @@ class ConfigurableProductsFixture extends Fixture
         if ($searchTerms !== null) {
             $searchTerms = array_key_exists(0, $searchTerms['search_term'])
                 ? $searchTerms['search_term'] : [$searchTerms['search_term']];
-        } else {
-            $searchTerms = [];
         }
         return $searchTerms;
     }
@@ -861,7 +855,7 @@ class ConfigurableProductsFixture extends Fixture
     ) {
         if (null === $this->dataGenerator) {
             $fileName = __DIR__ . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'dictionary.csv';
-            $this->dataGenerator = new DataGenerator($fileName);
+            $this->dataGenerator = new DataGenerator(realpath($fileName));
         }
 
         return function ($index) use (
@@ -880,7 +874,6 @@ class ConfigurableProductsFixture extends Fixture
                         $configurableProductsCount / ($simpleProductsCount + $configurableProductsCount)
                     )
                 );
-            // phpcs:ignore
             mt_srand($index);
             return $this->dataGenerator->generate(
                 $minAmountOfWordsDescription,

@@ -14,6 +14,9 @@ use Magento\TestFramework\Helper\Bootstrap;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Test Authorizenet configuration
+ */
 class ConfigTest extends TestCase
 {
     /**
@@ -21,11 +24,17 @@ class ConfigTest extends TestCase
      */
     private $objectManager;
 
+    /**
+     * @inheritdoc
+     */
     protected function setUp()
     {
         $this->objectManager = Bootstrap::getObjectManager();
     }
 
+    /**
+     * @return void
+     */
     public function testVerifyConfiguration()
     {
         /** @var Adapter $paymentAdapter */

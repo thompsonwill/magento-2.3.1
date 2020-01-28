@@ -32,7 +32,7 @@ class AssociatedProductsTest extends TestCase
     /**
      * @inheritdoc
      */
-    public function setUp(): void
+    public function setUp()
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->registry = $this->objectManager->get(\Magento\Framework\Registry::class);
@@ -89,7 +89,7 @@ class AssociatedProductsTest extends TestCase
      * @magentoDataFixture Magento/ConfigurableProduct/_files/product_configurable.php
      * @magentoAppArea adminhtml
      */
-    public function testAddManuallyConfigurationsWithNotFilterableInGridAttribute(): void
+    public function testAddManuallyConfigurationsWithNotFilterableInGridAttribute()
     {
         /** @var RequestInterface $request */
         $request = $this->objectManager->get(RequestInterface::class);

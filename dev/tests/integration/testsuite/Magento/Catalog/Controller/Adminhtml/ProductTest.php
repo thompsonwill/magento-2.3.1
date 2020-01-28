@@ -6,34 +6,31 @@
 namespace Magento\Catalog\Controller\Adminhtml;
 
 use Magento\Framework\App\Request\DataPersistorInterface;
+use Magento\Framework\Data\Form\FormKey;
 use Magento\Framework\Message\Manager;
-use Magento\Framework\App\Request\Http as HttpRequest;
+use Magento\TestFramework\Helper\Bootstrap;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Message\MessageInterface;
+use Magento\Framework\App\Request\Http as HttpRequest;
 
 /**
  * @magentoAppArea adminhtml
  */
 class ProductTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
-    /**
-     * Test calling save with invalid product's ID.
-     */
     public function testSaveActionWithDangerRequest()
     {
         $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->getRequest()->setPostValue(['product' => ['entity_id' => 15]]);
         $this->dispatch('backend/catalog/product/save');
         $this->assertSessionMessages(
-            $this->equalTo(['The product was unable to be saved. Please try again.']),
+            $this->equalTo(['Unable to save product']),
             MessageInterface::TYPE_ERROR
         );
         $this->assertRedirect($this->stringContains('/backend/catalog/product/new'));
     }
 
     /**
-     * Test saving existing product and specifying that we want redirect to new product form.
-     *
      * @magentoDataFixture Magento/Catalog/_files/product_simple.php
      */
     public function testSaveActionAndNew()
@@ -51,9 +48,6 @@ class ProductTest extends \Magento\TestFramework\TestCase\AbstractBackendControl
     }
 
     /**
-     * Test saving existing product and specifying that
-     * we want redirect to new product form with saved product's data applied.
-     *
      * @magentoDataFixture Magento/Catalog/_files/product_simple.php
      */
     public function testSaveActionAndDuplicate()
@@ -81,9 +75,6 @@ class ProductTest extends \Magento\TestFramework\TestCase\AbstractBackendControl
         );
     }
 
-    /**
-     * Testing Add Product button showing.
-     */
     public function testIndexAction()
     {
         $this->dispatch('backend/catalog/product');
@@ -124,8 +115,6 @@ class ProductTest extends \Magento\TestFramework\TestCase\AbstractBackendControl
     }
 
     /**
-     * Testing existing product edit page.
-     *
      * @magentoDataFixture Magento/Catalog/_files/product_simple.php
      */
     public function testEditAction()

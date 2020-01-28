@@ -40,6 +40,9 @@ class ShippingInformationManagementTest extends TestCase
      */
     private $shippingFactory;
 
+    /**
+     * @inheritdoc
+     */
     protected function setUp()
     {
         $objectManager = Bootstrap::getObjectManager();
@@ -57,9 +60,9 @@ class ShippingInformationManagementTest extends TestCase
      *
      * @magentoDataFixture Magento/Sales/_files/quote_with_customer.php
      * @magentoDataFixture Magento/Customer/_files/customer_with_addresses.php
-     * @dataProvider getAddressesVariation
+     * @dataProvider differentAddressesDataProvider
      * @expectedException  \Magento\Framework\Exception\InputException
-     * @expectedExceptionMessage The shipping information was unable to be saved. Verify the input data and try again.
+     * @expectedExceptionMessage Unable to save shipping information. Please check input data.
      */
     public function testDifferentAddresses(bool $swapShipping)
     {
@@ -90,15 +93,13 @@ class ShippingInformationManagementTest extends TestCase
     }
 
     /**
-     * Different variations for addresses test.
-     *
      * @return array
      */
-    public function getAddressesVariation(): array
+    public function differentAddressesDataProvider(): array
     {
         return [
             'Shipping address swap' => [true],
-            'Billing address swap' => [false]
+            'Billing address swap' => [false],
         ];
     }
 }

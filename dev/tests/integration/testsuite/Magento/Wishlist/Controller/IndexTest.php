@@ -99,11 +99,9 @@ class IndexTest extends \Magento\TestFramework\TestCase\AbstractController
         /** @var \Magento\Framework\Data\Form\FormKey $formKey */
         $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
         $this->getRequest()->setMethod('POST');
-        $this->getRequest()->setPostValue(
-            [
-                'form_key' => $formKey->getFormKey(),
-            ]
-        );
+        $this->getRequest()->setPostValue([
+            'form_key' => $formKey->getFormKey(),
+        ]);
 
         /** @var \Magento\Catalog\Api\ProductRepositoryInterface $productRepository */
         $productRepository = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
@@ -131,7 +129,6 @@ class IndexTest extends \Magento\TestFramework\TestCase\AbstractController
     public function testAllcartAction()
     {
         $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class)->getFormKey();
-        $this->getRequest()->setMethod('POST');
         $this->getRequest()->setParam('form_key', $formKey);
         $this->dispatch('wishlist/index/allcart');
 
@@ -162,7 +159,6 @@ class IndexTest extends \Magento\TestFramework\TestCase\AbstractController
         ];
 
         $this->getRequest()->setPostValue($request);
-        $this->getRequest()->setMethod('POST');
 
         $this->_objectManager->get(\Magento\Framework\Registry::class)->register(
             'wishlist',

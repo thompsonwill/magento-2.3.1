@@ -21,9 +21,6 @@ class ManageTest extends \Magento\TestFramework\TestCase\AbstractController
      */
     protected $coreSession;
 
-    /**
-     * Test setup
-     */
     protected function setUp()
     {
         parent::setUp();
@@ -34,13 +31,10 @@ class ManageTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->coreSession->setData('_form_key', 'formKey');
     }
 
-    /**
-     * test tearDown
-     */
     protected function tearDown()
     {
         $this->customerSession->setCustomerId(null);
-        $this->coreSession->unsetData('_form_key');
+        $this->coreSession->unsData('_form_key');
     }
 
     /**

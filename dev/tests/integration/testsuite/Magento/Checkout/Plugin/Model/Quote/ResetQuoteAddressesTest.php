@@ -21,11 +21,12 @@ class ResetQuoteAddressesTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @magentoDataFixture Magento/Checkout/_files/quote_with_virtual_product_and_address.php
-     *
      * @magentoAppArea frontend
+     * @magentoAppIsolation enabled
+     *
      * @return void
      */
-    public function testAfterRemoveItem(): void
+    public function testAfterRemoveItem()
     {
         $this->login(1);
         /** @var Quote $quote */
@@ -54,14 +55,12 @@ class ResetQuoteAddressesTest extends \PHPUnit\Framework\TestCase
         $cart = Bootstrap::getObjectManager()->create(Cart::class);
 
         $activeQuote = $cart->getQuote();
-        // Dummy data is still persisted here. This is sufficient to check that it is removed
-        $activeQuote->getExtensionAttributes()->setShippingAssignments(['test']);
-
+        $activeQuote->getExtensionAttributes()->setShippingAssignments([]);
+        if ($activeQuote->getShippingAddress()) {
+            $activeQuote->removeAddress($activeQuote->getShippingAddress()->getEntityId());
+        }
         $cart->removeItem($activeQuote->getAllVisibleItems()[0]->getId());
         $cart->save();
-
-        // Check that the shipping assignments were also unset
-        $this->assertEmpty($activeQuote->getExtensionAttributes()->getShippingAssignments());
 
         /** @var Quote $quote */
         $quote = Bootstrap::getObjectManager()->create(Quote::class);
@@ -77,7 +76,7 @@ class ResetQuoteAddressesTest extends \PHPUnit\Framework\TestCase
         $this->assertEmpty($quoteBillingAddressUpdated->getCity());
     }
 
-    private function login(int $customerId): void
+    private function login(int $customerId)
     {
         /** @var \Magento\Customer\Model\Session $session */
         $session = Bootstrap::getObjectManager()

@@ -15,11 +15,12 @@ use Magento\Framework\Session\Generic as GenericSession;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Api\PaymentMethodManagementInterface;
+use Magento\TestFramework\TestCase\AbstractController;
 
 /**
  * Tests PayPal transparent response controller.
  */
-class ResponseTest extends \Magento\TestFramework\TestCase\AbstractController
+class ResponseTest extends AbstractController
 {
     /**
      * Tests setting credit card expiration month and year to payment from PayPal response.
@@ -99,7 +100,7 @@ class ResponseTest extends \Magento\TestFramework\TestCase\AbstractController
      *
      * @param string $date
      */
-    private function setCurrentDateTime(string $dateTime): void
+    private function setCurrentDateTime(string $dateTime)
     {
         $dateTime = new \DateTime($dateTime, new \DateTimeZone('UTC'));
         $dateTimeFactory = $this->getMockBuilder(DateTimeFactory::class)

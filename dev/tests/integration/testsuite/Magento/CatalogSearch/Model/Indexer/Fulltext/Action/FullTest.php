@@ -14,9 +14,6 @@ use Magento\Store\Model\Store;
 use Magento\Catalog\Model\Product;
 use Magento\TestFramework\Helper\Bootstrap;
 
-/**
- * Class for testing fulltext index rebuild
- */
 class FullTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -24,9 +21,6 @@ class FullTest extends \PHPUnit\Framework\TestCase
      */
     protected $actionFull;
 
-    /**
-     * @inheritdoc
-     */
     protected function setUp()
     {
         $this->actionFull = Bootstrap::getObjectManager()->create(
@@ -35,7 +29,7 @@ class FullTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Testing fulltext index rebuild
+     * Testing fulltext index rebuild.
      *
      * @magentoDataFixture Magento/CatalogSearch/_files/products_for_index.php
      * @magentoDataFixture Magento/CatalogSearch/_files/product_configurable_not_available.php
@@ -47,6 +41,7 @@ class FullTest extends \PHPUnit\Framework\TestCase
         $productRepository = Bootstrap::getObjectManager()->get(ProductRepositoryInterface::class);
         $allowedStatuses = Bootstrap::getObjectManager()->get(Status::class)->getVisibleStatusIds();
         $allowedVisibility = Bootstrap::getObjectManager()->get(Engine::class)->getAllowedVisibility();
+
         $result = iterator_to_array($this->actionFull->rebuildStoreIndex(Store::DISTRO_STORE_ID));
         $this->assertNotEmpty($result);
 
@@ -65,10 +60,9 @@ class FullTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Prepare and return expected index data
+     * Prepare and return expected index data.
      *
      * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getExpectedIndexData()
     {
@@ -82,43 +76,44 @@ class FullTest extends \PHPUnit\Framework\TestCase
         $taxClassId = $attributeRepository
             ->get(\Magento\Customer\Api\Data\GroupInterface::TAX_CLASS_ID)
             ->getAttributeId();
+
         return [
             'configurable' => [
                 $skuId => 'configurable',
-                $configurableId => 'Option 2',
-                $nameId => 'Configurable Product | Configurable OptionOption 2',
-                $taxClassId => 'Taxable Goods | Taxable Goods',
-                $statusId => 'Enabled | Enabled'
+                $configurableId => 'Option 1 | Option 2',
+                $nameId => 'Configurable Product | Configurable OptionOption 1 | Configurable OptionOption 2',
+                $taxClassId => 'Taxable Goods | Taxable Goods | Taxable Goods',
+                $statusId => 'Enabled | Enabled | Enabled',
             ],
             'index_enabled' => [
                 $skuId => 'index_enabled',
                 $nameId => 'index enabled',
                 $taxClassId => 'Taxable Goods',
-                $statusId => 'Enabled'
+                $statusId => 'Enabled',
             ],
             'index_visible_search' => [
                 $skuId => 'index_visible_search',
                 $nameId => 'index visible search',
                 $taxClassId => 'Taxable Goods',
-                $statusId => 'Enabled'
+                $statusId => 'Enabled',
             ],
             'index_visible_category' => [
                 $skuId => 'index_visible_category',
                 $nameId => 'index visible category',
                 $taxClassId => 'Taxable Goods',
-                $statusId => 'Enabled'
+                $statusId => 'Enabled',
             ],
             'index_visible_both' => [
                 $skuId => 'index_visible_both',
                 $nameId => 'index visible both',
                 $taxClassId => 'Taxable Goods',
-                $statusId => 'Enabled'
+                $statusId => 'Enabled',
             ]
         ];
     }
 
     /**
-     * Testing fulltext index rebuild with configurations
+     * Testing fulltext index rebuild with configurations.
      *
      * @magentoDataFixture Magento/ConfigurableProduct/_files/product_configurable.php
      */
@@ -140,7 +135,7 @@ class FullTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get product Id by its SKU
+     * Get product Id by its SKU.
      *
      * @param string $sku
      * @return int

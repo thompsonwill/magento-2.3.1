@@ -7,9 +7,6 @@
 
 namespace Magento\ConfigurableProduct\Api;
 
-use Magento\TestFramework\Helper\Bootstrap;
-use Magento\Eav\Api\AttributeRepositoryInterface;
-
 class OptionRepositoryTest extends \Magento\TestFramework\TestCase\WebapiAbstract
 {
     const SERVICE_NAME = 'configurableProductOptionRepositoryV1';
@@ -88,7 +85,7 @@ class OptionRepositoryTest extends \Magento\TestFramework\TestCase\WebapiAbstrac
 
     /**
      * @expectedException \Exception
-     * @expectedExceptionMessage The product that was requested doesn't exist. Verify the product and try again.
+     * @expectedExceptionMessage Requested product doesn't exist
      */
     public function testGetUndefinedProduct()
     {
@@ -101,7 +98,7 @@ class OptionRepositoryTest extends \Magento\TestFramework\TestCase\WebapiAbstrac
      */
     public function testGetUndefinedOption()
     {
-        $expectedMessage = 'The "%1" entity that was requested doesn\'t exist. Verify the entity and try again.';
+        $expectedMessage = 'Requested option doesn\'t exist: %1';
         $productSku = 'configurable';
         $attributeId = -42;
         try {
@@ -141,12 +138,6 @@ class OptionRepositoryTest extends \Magento\TestFramework\TestCase\WebapiAbstrac
      */
     public function testAdd()
     {
-        /** @var AttributeRepositoryInterface $attributeRepository */
-        $attributeRepository = Bootstrap::getObjectManager()->create(AttributeRepositoryInterface::class);
-
-        /** @var \Magento\Eav\Api\Data\AttributeInterface $attribute */
-        $attribute = $attributeRepository->get('catalog_product', 'test_configurable');
-
         $productSku = 'simple';
         $serviceInfo = [
             'rest' => [
@@ -160,7 +151,7 @@ class OptionRepositoryTest extends \Magento\TestFramework\TestCase\WebapiAbstrac
             ]
         ];
         $option = [
-            'attribute_id' => $attribute->getAttributeId(),
+            'attribute_id' => 'test_configurable',
             'label' => 'Test',
             'values' => [
                 [

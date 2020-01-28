@@ -148,7 +148,7 @@ class ConfigOptionsListTest extends \PHPUnit\Framework\TestCase
             Lock::INPUT_KEY_LOCK_PROVIDER => 'db'
         ];
         $this->assertEquals(
-            ['Invalid encryption key. Encryption key must be 32 character string without any white space.'],
+            ['Invalid encryption key'],
             $this->object->validate($options, $this->deploymentConfig)
         );
     }

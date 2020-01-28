@@ -12,6 +12,9 @@ use Magento\AuthorizenetAcceptjs\Gateway\AbstractTest;
 use Magento\Payment\Gateway\Command\CommandPoolInterface;
 use Magento\Sales\Model\Order\Payment;
 
+/**
+ * Test Refund Settled command.
+ */
 class RefundSettledCommandTest extends AbstractTest
 {
     /**
@@ -20,6 +23,8 @@ class RefundSettledCommandTest extends AbstractTest
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_key somepassword
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_signature_key abc
      * @magentoDataFixture Magento/AuthorizenetAcceptjs/Fixture/full_order_with_capture.php
+     *
+     * @return void
      */
     public function testRefundSettledCommand()
     {

@@ -4,8 +4,6 @@
  * See COPYING.txt for license details.
  */
 
-declare(strict_types=1);
-
 namespace Magento\Checkout\Test\Constraint\Utils;
 
 use Magento\Checkout\Test\Page\CheckoutCart;
@@ -19,7 +17,7 @@ trait CartPageLoadTrait
      * @param CheckoutCart $checkoutCart
      * @return void
      */
-    public function waitForCartPageLoaded(CheckoutCart $checkoutCart) : void
+    public function waitForCartPageLoaded(CheckoutCart $checkoutCart)
     {
         $checkoutCart->getCartBlock()->waitForLoader();
         if (!$checkoutCart->getCartBlock()->cartIsEmpty()) {

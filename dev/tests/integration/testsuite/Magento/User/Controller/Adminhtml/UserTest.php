@@ -3,7 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-
 namespace Magento\User\Controller\Adminhtml;
 
 use Magento\Framework\App\Request\Http as HttpRequest;
@@ -87,11 +86,7 @@ class UserTest extends \Magento\TestFramework\TestCase\AbstractBackendController
             ]
         );
         $this->dispatch('backend/admin/user/save');
-        $this->assertSessionMessages(
-            $this->equalTo(
-                ['The password entered for the current user is invalid. Verify the password and try again.']
-            )
-        );
+        $this->assertSessionMessages($this->equalTo(['You have entered an invalid password for current user.']));
         $this->assertRedirect($this->stringContains('backend/admin/user/edit'));
     }
 
@@ -153,10 +148,7 @@ class UserTest extends \Magento\TestFramework\TestCase\AbstractBackendController
     }
 
     /**
-     * Verify password change properly updates fields when the request is valid.
-     *
-     * @param array $postData
-     * @param bool $isPasswordCorrect
+     * Verify password change properly updates fields when the request is valid
      *
      * @magentoDbIsolation enabled
      * @dataProvider saveActionPasswordChangeDataProvider

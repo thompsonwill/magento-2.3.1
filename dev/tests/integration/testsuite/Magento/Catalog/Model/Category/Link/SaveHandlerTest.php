@@ -3,8 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
-
 namespace Magento\Catalog\Model\Category\Link;
 
 use Magento\Catalog\Api\Data\CategoryLinkInterfaceFactory;
@@ -15,8 +13,6 @@ use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Save handler test
- *
  * @magentoDataFixture Magento/Catalog/_files/categories_no_products.php
  * @magentoDataFixture Magento/Catalog/_files/second_product_simple.php
  */
@@ -42,26 +38,16 @@ class SaveHandlerTest extends TestCase
      */
     private $saveHandler;
 
-    /**
-     * @inheritdoc
-     */
     protected function setUp()
     {
-        $objectManager = Bootstrap::getObjectManager();
-        $this->productRepository = $objectManager->create(ProductRepositoryInterface::class);
-        $metadataPool = $objectManager->create(MetadataPool::class);
-        $this->productLinkField = $metadataPool->getMetadata(ProductInterface::class)
-            ->getLinkField();
-        $this->categoryLinkFactory = $objectManager->create(CategoryLinkInterfaceFactory::class);
-        $this->saveHandler = $objectManager->create(SaveHandler::class);
+        $this->productRepository = Bootstrap::getObjectManager()->create(ProductRepositoryInterface::class);
+        $metadataPool = Bootstrap::getObjectManager()->create(MetadataPool::class);
+        $this->productLinkField = $metadataPool->getMetadata(ProductInterface::class)->getLinkField();
+        $this->categoryLinkFactory = Bootstrap::getObjectManager()->create(CategoryLinkInterfaceFactory::class);
+        $this->saveHandler = Bootstrap::getObjectManager()->create(SaveHandler::class);
     }
 
-    /**
-     * Execute test
-     *
-     * @return void
-     */
-    public function testExecute(): void
+    public function testExecute()
     {
         $product = $this->productRepository->get('simple2');
         $product->setCategoryIds([3, 4, 6]);
@@ -94,19 +80,25 @@ class SaveHandlerTest extends TestCase
             $categoryLinks[] = $categoryLink;
         }
         $categoryLinks = $this->updateCategoryLinks($product, $categoryLinks);
-        $this->assertPositions($categoryPositions, $categoryLinks);
+        foreach ($categoryLinks as $categoryLink) {
+            $categoryPosition = $categoryPositions[$categoryLink->getCategoryId()];
+            $this->assertEquals($categoryPosition['category_id'], $categoryLink->getCategoryId());
+            $this->assertEquals($categoryPosition['position'], $categoryLink->getPosition());
+        }
 
         $categoryPositions[4]['position'] = 2;
         $categoryLink = $this->categoryLinkFactory->create()
             ->setCategoryId(4)
             ->setPosition($categoryPositions[4]['position']);
         $categoryLinks = $this->updateCategoryLinks($product, [$categoryLink]);
-        $this->assertPositions($categoryPositions, $categoryLinks);
+        foreach ($categoryLinks as $categoryLink) {
+            $categoryPosition = $categoryPositions[$categoryLink->getCategoryId()];
+            $this->assertEquals($categoryPosition['category_id'], $categoryLink->getCategoryId());
+            $this->assertEquals($categoryPosition['position'], $categoryLink->getPosition());
+        }
     }
 
     /**
-     * Update category links
-     *
      * @param ProductInterface $product
      * @param \Magento\Catalog\Api\Data\CategoryLinkInterface[] $categoryLinks
      * @return \Magento\Catalog\Api\Data\CategoryLinkInterface[]
@@ -117,25 +109,8 @@ class SaveHandlerTest extends TestCase
         $arguments = [$this->productLinkField => $product->getData($this->productLinkField)];
         $this->saveHandler->execute($product, $arguments);
         $product = $this->productRepository->get($product->getSku(), false, null, true);
-        $categoryLinks = $product->getExtensionAttributes()
-            ->getCategoryLinks();
+        $categoryLinks = $product->getExtensionAttributes()->getCategoryLinks();
 
         return $categoryLinks;
-    }
-
-    /**
-     * Assert positions
-     *
-     * @param array $categoryPositions
-     * @param array $categoryLinks
-     * @return void
-     */
-    private function assertPositions(array $categoryPositions, array $categoryLinks): void
-    {
-        foreach ($categoryLinks as $categoryLink) {
-            $categoryPosition = $categoryPositions[$categoryLink->getCategoryId()];
-            $this->assertEquals($categoryPosition['category_id'], $categoryLink->getCategoryId());
-            $this->assertEquals($categoryPosition['position'], $categoryLink->getPosition());
-        }
     }
 }

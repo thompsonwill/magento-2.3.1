@@ -111,7 +111,6 @@ class FormTest extends \PHPUnit\Framework\TestCase
      *
      * @static
      * @return array
-     * phpcs:disable Magento2.Functions.StaticFunction
      */
     public static function formPostInitDataProvider()
     {

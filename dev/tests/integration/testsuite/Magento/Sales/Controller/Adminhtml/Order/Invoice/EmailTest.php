@@ -26,7 +26,7 @@ class EmailTest extends AbstractInvoiceControllerTest
     /**
      * @return void
      */
-    public function testSendInvoiceEmail(): void
+    public function testSendInvoiceEmail()
     {
         $order = $this->getOrder('100000001');
         $invoice = $this->getInvoiceByOrder($order);
@@ -59,7 +59,7 @@ class EmailTest extends AbstractInvoiceControllerTest
         );
 
         $this->assertEquals($message->getSubject(), $subject);
-        $this->assertThat($message->getRawMessage(), $messageConstraint);
+        $this->assertThat($message->getBody()->getParts()[0]->getRawContent(), $messageConstraint);
     }
 
     /**

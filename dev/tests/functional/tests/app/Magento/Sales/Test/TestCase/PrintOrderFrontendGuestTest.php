@@ -36,18 +36,18 @@ class PrintOrderFrontendGuestTest extends Scenario
     /* end tags */
 
     /**
-     * Browser.
-     *
-     * @var BrowserInterface
-     */
-    protected $browser;
-
-    /**
      * DomainWhitelist CLI
      *
      * @var EnvWhitelist
      */
     private $envWhitelist;
+
+    /**
+     * Browser.
+     *
+     * @var BrowserInterface
+     */
+    protected $browser;
 
     /**
      * Prepare data.
@@ -79,7 +79,7 @@ class PrintOrderFrontendGuestTest extends Scenario
      *
      * @return void
      */
-    protected function tearDown()
+    public function tearDown()
     {
         $this->envWhitelist->removeHost('example.com');
         $this->browser->closeWindow();

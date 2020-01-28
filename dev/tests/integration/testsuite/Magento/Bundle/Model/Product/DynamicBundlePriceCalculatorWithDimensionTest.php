@@ -3,13 +3,12 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
 
 namespace Magento\Bundle\Model\Product;
 
 /**
  * @magentoDbIsolation disabled
- * @magentoIndexerDimensionMode catalog_product_price website_and_customer_group
+ * @--magentoIndexerDimensionMode catalog_product_price website_and_customer_group
  * @group indexer_dimension
  * @magentoAppArea frontend
  */
@@ -25,6 +24,9 @@ class DynamicBundlePriceCalculatorWithDimensionTest extends BundlePriceAbstract
      */
     public function testPriceForDynamicBundle(array $strategyModifiers, array $expectedResults)
     {
+        $this->markTestSkipped(
+            'Skipped because of MAGETWO-99136'
+        );
         $this->prepareFixture($strategyModifiers, 'bundle_product');
         $bundleProduct = $this->productRepository->get('bundle_product', false, null, true);
 
@@ -64,6 +66,9 @@ class DynamicBundlePriceCalculatorWithDimensionTest extends BundlePriceAbstract
      */
     public function testPriceForDynamicBundleInWebsiteScope(array $strategyModifiers, array $expectedResults)
     {
+        $this->markTestSkipped(
+            'Skipped because of MAGETWO-99136'
+        );
         $this->prepareFixture($strategyModifiers, 'bundle_product');
         $bundleProduct = $this->productRepository->get('bundle_product', false, null, true);
 

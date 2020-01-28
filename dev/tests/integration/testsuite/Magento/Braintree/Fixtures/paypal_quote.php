@@ -4,8 +4,6 @@
  * See COPYING.txt for license details.
  */
 
-declare(strict_types=1);
-
 use Magento\Braintree\Model\Ui\PayPal\ConfigProvider;
 use Magento\Quote\Api\CartRepositoryInterface;
 

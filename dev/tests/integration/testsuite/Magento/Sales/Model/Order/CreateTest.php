@@ -63,7 +63,7 @@ class CreateTest extends \PHPUnit\Framework\TestCase
      * @magentoDataFixture Magento/Sales/_files/guest_quote_with_addresses.php
      * @return void
      */
-    public function testSendEmailOnOrderPlace(): void
+    public function testSendEmailOnOrderPlace()
     {
         /** @var Quote $quote */
         $quote = $this->objectManager->create(Quote::class);
@@ -95,6 +95,6 @@ class CreateTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->assertEquals($message->getSubject(), $subject);
-        $this->assertThat($message->getRawMessage(), $assert);
+        $this->assertThat($message->getBody()->getParts()[0]->getRawContent(), $assert);
     }
 }

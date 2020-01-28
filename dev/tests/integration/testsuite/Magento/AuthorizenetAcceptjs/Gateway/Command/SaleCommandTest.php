@@ -13,6 +13,9 @@ use Magento\Payment\Gateway\Command\CommandPoolInterface;
 use Magento\Sales\Model\Order\Payment;
 use Magento\Sales\Model\Order\Payment\Transaction;
 
+/**
+ * Test Sale command.
+ */
 class SaleCommandTest extends AbstractTest
 {
     /**
@@ -20,6 +23,9 @@ class SaleCommandTest extends AbstractTest
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/login someusername
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_key somepassword
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_signature_key abc
+     *
+     * @magentoDataFixture Magento/AuthorizenetAcceptjs/_files/full_order.php
+     * @return void
      */
     public function testSaleCommand()
     {
@@ -27,7 +33,7 @@ class SaleCommandTest extends AbstractTest
         $commandPool = $this->objectManager->get('AuthorizenetAcceptjsCommandPool');
         $command = $commandPool->get('sale');
 
-        $order = include __DIR__ . '/../../_files/full_order.php';
+        $order = $this->getOrderWithIncrementId('100000001');
         $payment = $order->getPayment();
 
         $paymentDO = $this->paymentFactory->create($payment);
@@ -43,7 +49,7 @@ class SaleCommandTest extends AbstractTest
 
         $command->execute([
             'payment' => $paymentDO,
-            'amount' => 100.00
+            'amount' => 110.00
         ]);
 
         /** @var Payment $payment */

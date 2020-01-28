@@ -112,7 +112,9 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
 
         $existingCustomer = $objectManager->get(
             \Magento\Framework\Registry::class
-        )->registry('_fixture/Magento_ImportExport_Customer');
+        )->registry(
+            '_fixture/Magento_ImportExport_Customer'
+        );
 
         $updatedCustomer = $customers[$existingCustomer->getId()];
 
@@ -136,13 +138,11 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests importData() method.
+     * Test importData() method
      *
      * @magentoDataFixture Magento/Customer/_files/import_export/customer.php
-     *
-     * @return void
      */
-    public function testImportDataWithOneAdditionalColumn(): void
+    public function testImportDataWithOneAdditionalColumn()
     {
         $source = new \Magento\ImportExport\Model\Import\Source\Csv(
             __DIR__ . '/_files/customer_to_import_with_one_additional_column.csv',
@@ -169,8 +169,11 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
         /** @var $objectManager \Magento\TestFramework\ObjectManager */
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 
-        $existingCustomer = $objectManager->get(\Magento\Framework\Registry::class)
-            ->registry('_fixture/Magento_ImportExport_Customer');
+        $existingCustomer = $objectManager->get(
+            \Magento\Framework\Registry::class
+        )->registry(
+            '_fixture/Magento_ImportExport_Customer'
+        );
 
         $updatedCustomer = $customers[$existingCustomer->getId()];
 

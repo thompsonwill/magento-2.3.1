@@ -65,6 +65,7 @@ class ConfigurableProductTemplateGenerator implements TemplateEntityGeneratorInt
     {
         $attributeSet = $this->fixture['attribute_set_id'];
         $product = $this->getProductTemplate($attributeSet);
+
         $product->save();
 
         return $product;
@@ -85,7 +86,7 @@ class ConfigurableProductTemplateGenerator implements TemplateEntityGeneratorInt
                 'type_id' => Configurable::TYPE_CODE,
                 'name' => 'template name' . $productRandomizerNumber,
                 'url_key' => 'template-url' . $productRandomizerNumber,
-                'sku' => 'template_sku_configurable' . $productRandomizerNumber,
+                'sku' => 'template_sku' . $productRandomizerNumber,
                 'meta_description' => 'Configurable Product',
                 'meta_keyword' => $productRandomizerNumber,
                 'meta_title' => $productRandomizerNumber,

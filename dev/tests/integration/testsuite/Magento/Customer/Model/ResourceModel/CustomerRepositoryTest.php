@@ -31,6 +31,7 @@ use Magento\Customer\Model\Customer;
  * Checks Customer insert, update, search with repository
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @magentoAppIsolation enabled
  */
 class CustomerRepositoryTest extends \PHPUnit\Framework\TestCase
 {
@@ -470,8 +471,10 @@ class CustomerRepositoryTest extends \PHPUnit\Framework\TestCase
         $customer = $this->customerRepository->get($fixtureCustomerEmail);
         $this->customerRepository->delete($customer);
         /** Ensure that customer was deleted */
-        $this->expectException(NoSuchEntityException::class);
-        $this->expectExceptionMessage('No such entity with email = customer@example.com, websiteId = 1');
+        $this->expectException(
+            NoSuchEntityException::class,
+            'No such entity with email = customer@example.com, websiteId = 1'
+        );
         $this->customerRepository->get($fixtureCustomerEmail);
     }
 
@@ -488,8 +491,10 @@ class CustomerRepositoryTest extends \PHPUnit\Framework\TestCase
         $fixtureCustomerId = 1;
         $this->customerRepository->deleteById($fixtureCustomerId);
         /** Ensure that customer was deleted */
-        $this->expectException(NoSuchEntityException::class);
-        $this->expectExceptionMessage('No such entity with email = customer@example.com, websiteId = 1');
+        $this->expectException(
+            NoSuchEntityException::class,
+            'No such entity with email = customer@example.com, websiteId = 1'
+        );
         $this->customerRepository->get($fixtureCustomerEmail);
     }
 

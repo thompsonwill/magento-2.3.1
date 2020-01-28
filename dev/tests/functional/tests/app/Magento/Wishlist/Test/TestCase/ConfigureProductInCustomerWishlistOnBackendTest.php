@@ -47,7 +47,6 @@ class ConfigureProductInCustomerWishlistOnBackendTest extends AbstractWishlistTe
      * Create customer.
      *
      * @param Customer $customer
-     * @param EnvWhitelist $envWhitelist
      * @return array
      */
     public function __prepare(
@@ -99,7 +98,7 @@ class ConfigureProductInCustomerWishlistOnBackendTest extends AbstractWishlistTe
      *
      * @return void
      */
-    protected function tearDown()
+    public function tearDown()
     {
         $this->envWhitelist->removeHost('example.com');
     }

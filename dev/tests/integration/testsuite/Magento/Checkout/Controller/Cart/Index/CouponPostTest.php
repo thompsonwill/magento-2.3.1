@@ -47,7 +47,7 @@ class CouponPostTest extends \Magento\TestFramework\TestCase\AbstractController
      * @magentoDataFixture Magento/Usps/Fixtures/cart_rule_coupon_free_shipping.php
      * @return void
      */
-    public function testAddingValidCoupon(): void
+    public function testAddingValidCoupon()
     {
         /** @var $session \Magento\Checkout\Model\Session */
         $session = $this->_objectManager->create(\Magento\Checkout\Model\Session::class);

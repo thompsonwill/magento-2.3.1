@@ -26,7 +26,7 @@ class SaveTest extends AbstractInvoiceControllerTest
     /**
      * @return void
      */
-    public function testSendEmailOnInvoiceSave(): void
+    public function testSendEmailOnInvoiceSave()
     {
         $order = $this->prepareRequest(['invoice' => ['send_email' => true]]);
         $this->dispatch('backend/sales/order_invoice/save');
@@ -51,7 +51,7 @@ class SaveTest extends AbstractInvoiceControllerTest
         );
 
         $this->assertEquals($message->getSubject(), $subject);
-        $this->assertThat($message->getRawMessage(), $messageConstraint);
+        $this->assertThat($message->getBody()->getParts()[0]->getRawContent(), $messageConstraint);
     }
 
     /**

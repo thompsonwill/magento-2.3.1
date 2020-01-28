@@ -3,8 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
-
 namespace Magento\Framework\Error;
 
 use Magento\Framework\Serialize\Serializer\Json;
@@ -13,7 +11,6 @@ use Magento\Framework\Serialize\Serializer\Json;
  * Error processor
  *
  * @SuppressWarnings(PHPMD.TooManyFields)
- * phpcs:ignoreFile
  */
 class Processor
 {
@@ -260,10 +257,15 @@ class Processor
         /**
          * Define server http host
          */
-        $host = $this->resolveHostName();
+        if (!empty($_SERVER['HTTP_HOST'])) {
+            $host = $_SERVER['HTTP_HOST'];
+        } elseif (!empty($_SERVER['SERVER_NAME'])) {
+            $host = $_SERVER['SERVER_NAME'];
+        } else {
+            $host = 'localhost';
+        }
 
-        $isSecure = (!empty($_SERVER['HTTPS'])) && ($_SERVER['HTTPS'] !== 'off')
-            || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && ($_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+        $isSecure = (!empty($_SERVER['HTTPS'])) && ($_SERVER['HTTPS'] != 'off');
         $url = ($isSecure ? 'https://' : 'http://') . $host;
 
         $port = explode(':', $host);
@@ -273,23 +275,6 @@ class Processor
             $url .= ':' . $port[1];
         }
         return  $url;
-    }
-
-    /**
-     * Resolve hostname
-     *
-     * @return string
-     */
-    private function resolveHostName() : string
-    {
-        if (!empty($_SERVER['HTTP_HOST'])) {
-            $host = $_SERVER['HTTP_HOST'];
-        } elseif (!empty($_SERVER['SERVER_NAME'])) {
-            $host = $_SERVER['SERVER_NAME'];
-        } else {
-            $host = 'localhost';
-        }
-        return $host;
     }
 
     /**
@@ -481,7 +466,7 @@ class Processor
     public function saveReport($reportData)
     {
         $this->reportData = $reportData;
-        $this->reportId   = abs((int)(microtime(true) * random_int(100, 1000)));
+        $this->reportId   = abs((int)microtime(true) * random_int(100, 1000));
         $this->_reportFile = $this->_reportDir . '/' . $this->reportId;
         $this->_setReportData($reportData);
 
@@ -504,6 +489,7 @@ class Processor
      *
      * @param int $reportId
      * @return void
+     * @SuppressWarnings(PHPMD.ExitExpression)
      */
     public function loadReport($reportId)
     {

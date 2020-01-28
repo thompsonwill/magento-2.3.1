@@ -12,6 +12,9 @@ use Magento\AuthorizenetAcceptjs\Gateway\AbstractTest;
 use Magento\Payment\Gateway\Command\CommandPoolInterface;
 use Magento\Sales\Model\Order\Payment;
 
+/**
+ * Test Cancel command.
+ */
 class CancelCommandTest extends AbstractTest
 {
     /**
@@ -21,6 +24,8 @@ class CancelCommandTest extends AbstractTest
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_signature_key abc
      * @magentoDataFixture Magento/AuthorizenetAcceptjs/Fixture/order_auth_only.php
      * @dataProvider aliasesProvider
+     *
+     * @return void
      */
     public function testCancelCommand(string $commandName)
     {
@@ -52,11 +57,14 @@ class CancelCommandTest extends AbstractTest
         $this->assertArrayNotHasKey('real_transaction_id', $payment->getTransactionAdditionalInfo());
     }
 
-    public function aliasesProvider()
+    /**
+     * @return array
+     */
+    public function aliasesProvider(): array
     {
         return [
             ['cancel'],
-            ['deny_payment']
+            ['deny_payment'],
         ];
     }
 }

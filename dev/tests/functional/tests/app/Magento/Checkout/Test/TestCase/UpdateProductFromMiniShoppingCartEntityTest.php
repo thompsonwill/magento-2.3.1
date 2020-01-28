@@ -39,6 +39,13 @@ class UpdateProductFromMiniShoppingCartEntityTest extends Injectable
     /* end tags */
 
     /**
+     * DomainWhitelist CLI
+     *
+     * @var EnvWhitelist
+     */
+    private $envWhitelist;
+
+    /**
      * Catalog product view page.
      *
      * @var CatalogProductView
@@ -58,13 +65,6 @@ class UpdateProductFromMiniShoppingCartEntityTest extends Injectable
      * @var FixtureFactory
      */
     protected $fixtureFactory;
-
-    /**
-     * DomainWhitelist CLI
-     *
-     * @var EnvWhitelist
-     */
-    private $envWhitelist;
 
     /**
      * Inject data.
@@ -180,7 +180,7 @@ class UpdateProductFromMiniShoppingCartEntityTest extends Injectable
      *
      * @return void
      */
-    protected function tearDown()
+    public function tearDown()
     {
         $this->envWhitelist->removeHost('example.com');
     }

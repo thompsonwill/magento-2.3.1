@@ -28,8 +28,6 @@ class GroupTest extends \Magento\TestFramework\TestCase\AbstractBackendControlle
 
     /**
      * @inheritDoc
-     *
-     * @throws \Magento\Framework\Exception\AuthenticationException
      */
     public function setUp()
     {
@@ -37,15 +35,6 @@ class GroupTest extends \Magento\TestFramework\TestCase\AbstractBackendControlle
         $objectManager = Bootstrap::getObjectManager();
         $this->session = $objectManager->get(\Magento\Framework\Session\SessionManagerInterface::class);
         $this->groupRepository = $objectManager->get(\Magento\Customer\Api\GroupRepositoryInterface::class);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function tearDown()
-    {
-        parent::tearDown();
-        //$this->session->unsCustomerGroupData();
     }
 
     /**
@@ -97,7 +86,7 @@ class GroupTest extends \Magento\TestFramework\TestCase\AbstractBackendControlle
      */
     public function testDeleteActionNoGroupId()
     {
-        $this->getRequest()->setMethod(\Magento\Framework\App\Request\Http::METHOD_POST);
+        $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('backend/customer/group/delete');
         $this->assertRedirect($this->stringStartsWith(self::BASE_CONTROLLER_URL));
     }
@@ -111,7 +100,7 @@ class GroupTest extends \Magento\TestFramework\TestCase\AbstractBackendControlle
     {
         $groupId = $this->findGroupIdWithCode(self::CUSTOMER_GROUP_CODE);
         $this->getRequest()->setParam('id', $groupId);
-        $this->getRequest()->setMethod(\Magento\Framework\App\Request\Http::METHOD_POST);
+        $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('backend/customer/group/delete');
 
         /**
@@ -132,7 +121,7 @@ class GroupTest extends \Magento\TestFramework\TestCase\AbstractBackendControlle
     public function testDeleteActionNonExistingGroupId()
     {
         $this->getRequest()->setParam('id', 10000);
-        $this->getRequest()->setMethod(\Magento\Framework\App\Request\Http::METHOD_POST);
+        $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('backend/customer/group/delete');
 
         /**
@@ -199,7 +188,7 @@ class GroupTest extends \Magento\TestFramework\TestCase\AbstractBackendControlle
         $this->dispatch('backend/customer/group/save');
 
         $this->assertSessionMessages(
-            $this->equalTo(['"code" is required. Enter and try again.']),
+            $this->equalTo(['code is a required field.']),
             MessageInterface::TYPE_ERROR
         );
     }
@@ -292,7 +281,7 @@ class GroupTest extends \Magento\TestFramework\TestCase\AbstractBackendControlle
         $this->dispatch('backend/customer/group/save');
 
         $this->assertSessionMessages(
-            $this->equalTo(['"code" is required. Enter and try again.']),
+            $this->equalTo(['code is a required field.']),
             MessageInterface::TYPE_ERROR
         );
         $this->assertSessionMessages($this->isEmpty(), MessageInterface::TYPE_SUCCESS);

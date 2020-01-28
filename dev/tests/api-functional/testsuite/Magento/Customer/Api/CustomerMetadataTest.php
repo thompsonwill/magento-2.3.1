@@ -26,7 +26,7 @@ class CustomerMetadataTest extends WebapiAbstract
     private $customerMetadata;
 
     /**
-     * Execute per test initialization.
+     * @inheritdoc
      */
     public function setUp()
     {

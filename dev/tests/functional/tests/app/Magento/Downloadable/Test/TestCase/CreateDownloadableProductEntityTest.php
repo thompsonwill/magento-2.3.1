@@ -55,13 +55,6 @@ class CreateDownloadableProductEntityTest extends Injectable
     protected $catalogProductNew;
 
     /**
-     * DomainWhitelist CLI
-     *
-     * @var EnvWhitelist
-     */
-    private $envWhitelist;
-
-    /**
      * Persist category
      *
      * @param Category $category
@@ -74,6 +67,13 @@ class CreateDownloadableProductEntityTest extends Injectable
             'category' => $category
         ];
     }
+
+    /**
+     * DomainWhitelist CLI
+     *
+     * @var EnvWhitelist
+     */
+    private $envWhitelist;
 
     /**
      * Filling objects of the class
@@ -115,9 +115,7 @@ class CreateDownloadableProductEntityTest extends Injectable
     }
 
     /**
-     * Clean data after running test.
-     *
-     * @return void
+     * @inheritDoc
      */
     protected function tearDown()
     {

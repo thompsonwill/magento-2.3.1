@@ -27,7 +27,7 @@ class AddCommentTest extends AbstractCreditmemoControllerTest
     /**
      * @return void
      */
-    public function testSendEmailOnAddCreditmemoComment(): void
+    public function testSendEmailOnAddCreditmemoComment()
     {
         $comment = 'Test Credit Memo Comment';
         $order = $this->prepareRequest(
@@ -54,7 +54,7 @@ class AddCommentTest extends AbstractCreditmemoControllerTest
         );
 
         $this->assertEquals($message->getSubject(), $subject);
-        $this->assertThat($message->getRawMessage(), $messageConstraint);
+        $this->assertThat($message->getBody()->getParts()[0]->getRawContent(), $messageConstraint);
     }
 
     /**

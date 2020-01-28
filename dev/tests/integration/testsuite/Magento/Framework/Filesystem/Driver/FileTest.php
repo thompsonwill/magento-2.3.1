@@ -7,7 +7,11 @@
  */
 namespace Magento\Framework\Filesystem\Driver;
 
+use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Filesystem;
 use Magento\Framework\Exception\FileSystemException;
+use Magento\Framework\Filesystem\Directory\WriteInterface;
+use Magento\TestFramework\Helper\Bootstrap;
 
 class FileTest extends \PHPUnit\Framework\TestCase
 {
@@ -102,12 +106,52 @@ class FileTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Check, driver can create file with content or without one.
+     *
+     * @dataProvider createFileDataProvider
+     * @param int $result
+     * @param string $fileName
+     * @param string $fileContent
+     * @return void
+     * @throws \Magento\Framework\Exception\FileSystemException
+     */
+    public function testCreateFile(int $result, string $fileName, string $fileContent)
+    {
+        /** @var WriteInterface $directory */
+        $directory = Bootstrap::getObjectManager()->get(Filesystem::class)->getDirectoryWrite(DirectoryList::VAR_DIR);
+        $filePath = $directory->getAbsolutePath() . '/' . $fileName;
+        $this->assertSame($result, $this->driver->filePutContents($filePath, $fileContent));
+        $this->assertTrue($this->driver->deleteFile($filePath));
+    }
+
+    /**
+     * Provides test data for testCreateFile().
+     *
+     * @return array
+     */
+    public function createFileDataProvider()
+    {
+        return [
+            'file_with_content' => [
+                'result' => 11,
+                'fileName' => 'test.txt',
+                'fileContent' => 'testContent',
+            ],
+            'empty_file' => [
+                'result' => 0,
+                'filePath' => 'test.txt',
+                'fileContent' => '',
+            ]
+        ];
+    }
+
+    /**
      * Tests creation and removing of symlinks.
      *
      * @throws FileSystemException
      * @return void
      */
-    public function testSymlinks(): void
+    public function testSymlinks()
     {
         $sourceDirectory = $this->generatedPath . '/source';
         $destinationDirectory = $this->generatedPath . '/destination';
@@ -129,7 +173,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
      * @throws FileSystemException
      * @return void
      */
-    private function removeGeneratedDirectory(): void
+    private function removeGeneratedDirectory()
     {
         if (is_dir($this->generatedPath)) {
             $this->driver->deleteDirectory($this->generatedPath);

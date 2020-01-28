@@ -32,9 +32,6 @@ class SynonymReaderTest extends \PHPUnit\Framework\TestCase
                 'ELIZABETH', []
             ],
             [
-                '-+<(ELIZABETH)>*~', []
-            ],
-            [
                 'ENGLISH', [['synonyms' => 'british,english', 'store_id' => 1, 'website_id' => 0]]
             ],
             [
@@ -45,9 +42,6 @@ class SynonymReaderTest extends \PHPUnit\Framework\TestCase
             ],
             [
                 'Monarch', [['synonyms' => 'queen,monarch', 'store_id' => 1, 'website_id' => 0]]
-            ],
-            [
-                '-+<(Monarch)>*~', [['synonyms' => 'queen,monarch', 'store_id' => 1, 'website_id' => 0]]
             ],
             [
                 'MONARCH English', [
@@ -69,6 +63,15 @@ class SynonymReaderTest extends \PHPUnit\Framework\TestCase
             ],
             [
                 'query_value+@', []
+            ],
+            [
+                '<', []
+            ],
+            [
+                '>', []
+            ],
+            [
+                '<english>', [['synonyms' => 'british,english', 'store_id' => 1, 'website_id' => 0]]
             ],
         ];
     }

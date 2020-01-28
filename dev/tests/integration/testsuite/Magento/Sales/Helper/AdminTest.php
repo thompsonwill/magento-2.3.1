@@ -35,7 +35,7 @@ class AdminTest extends \PHPUnit\Framework\TestCase
      *
      * @dataProvider escapeHtmlWithLinksDataProvider
      */
-    public function testEscapeHtmlWithLinks(string $data, string $expected, $allowedTags = null): void
+    public function testEscapeHtmlWithLinks(string $data, string $expected, $allowedTags = null)
     {
         $actual = $this->helper->escapeHtmlWithLinks($data, $allowedTags);
         $this->assertEquals($expected, $actual);

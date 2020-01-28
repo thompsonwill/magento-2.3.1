@@ -11,8 +11,6 @@ use Magento\TestFramework\Helper\Bootstrap;
 
 /**
  * Test class for Magento\User\Controller\Adminhtml\User\InvalidateToken.
- *
- * @magentoAppArea adminhtml
  */
 class InvalidateTokenTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
@@ -91,6 +89,10 @@ class InvalidateTokenTest extends \Magento\TestFramework\TestCase\AbstractBacken
         // invalidate token
         $this->getRequest()->setParam('user_id', $adminUserId);
         $this->dispatch('backend/admin/user/invalidateToken');
+        $this->assertSessionMessages(
+            $this->equalTo(['This user has no tokens.']),
+            MessageInterface::TYPE_ERROR
+        );
     }
 
     public function testInvalidateTokenNoUser()
@@ -108,5 +110,9 @@ class InvalidateTokenTest extends \Magento\TestFramework\TestCase\AbstractBacken
         // invalidate token
         $this->getRequest()->setParam('user_id', $adminUserId);
         $this->dispatch('backend/admin/user/invalidateToken');
+        $this->assertSessionMessages(
+            $this->equalTo(['This user has no tokens.']),
+            MessageInterface::TYPE_ERROR
+        );
     }
 }

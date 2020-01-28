@@ -5,10 +5,10 @@
  */
 namespace Magento\Catalog\Controller\Adminhtml;
 
-use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\Store\Model\Store;
 use Magento\Catalog\Model\ResourceModel\Product;
+use Magento\Framework\App\Request\Http as HttpRequest;
 
 /**
  * @magentoAppArea adminhtml
@@ -376,7 +376,7 @@ class CategoryTest extends \Magento\TestFramework\TestCase\AbstractBackendContro
         );
         $this->dispatch('backend/catalog/category/save');
         $this->assertSessionMessages(
-            $this->equalTo(['The "Name" attribute value is empty. Set the attribute and try again.']),
+            $this->equalTo(['The value of attribute "Name" must be set']),
             \Magento\Framework\Message\MessageInterface::TYPE_ERROR
         );
     }
@@ -447,9 +447,9 @@ class CategoryTest extends \Magento\TestFramework\TestCase\AbstractBackendContro
         $storeId = $store->getId();
         $oldCategoryProductsCount = $this->getCategoryProductsCount();
         $this->getRequest()->setParam('store', $storeId);
-        $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->getRequest()->setParam('id', 96377);
         $this->getRequest()->setPostValue($postData);
+        $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('backend/catalog/category/save');
         $newCategoryProductsCount = $this->getCategoryProductsCount();
         $this->assertEquals(
@@ -549,10 +549,8 @@ class CategoryTest extends \Magento\TestFramework\TestCase\AbstractBackendContro
     {
         $oldCategoryProducts = $this->productResource->getConnection()->select()->from(
             $this->productResource->getTable('catalog_category_product'),
-            'product_id'
+            new \Zend_Db_Expr('COUNT(product_id)')
         );
-        return count(
-            $this->productResource->getConnection()->fetchAll($oldCategoryProducts)
-        );
+        return $this->productResource->getConnection()->fetchOne($oldCategoryProducts);
     }
 }

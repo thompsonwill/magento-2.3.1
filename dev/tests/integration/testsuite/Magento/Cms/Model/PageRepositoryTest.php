@@ -25,12 +25,12 @@ class PageRepositoryTest extends TestCase
      *
      * @var PageRepositoryInterface
      */
-    private $repo;
+    private $repository;
 
     /**
      * @var Auth
      */
-    private $auth;
+    private $authorization;
 
     /**
      * @var SearchCriteriaBuilder
@@ -43,26 +43,25 @@ class PageRepositoryTest extends TestCase
     private $aclBuilder;
 
     /**
-     * Sets up common objects.
-     *
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function setUp()
     {
-        $this->repo = Bootstrap::getObjectManager()->create(PageRepositoryInterface::class);
-        $this->auth = Bootstrap::getObjectManager()->get(Auth::class);
+        $this->repository = Bootstrap::getObjectManager()->create(PageRepositoryInterface::class);
+        $this->authorization = Bootstrap::getObjectManager()->get(Auth::class);
         $this->criteriaBuilder = Bootstrap::getObjectManager()->get(SearchCriteriaBuilder::class);
         $this->aclBuilder = Bootstrap::getObjectManager()->get(Builder::class);
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function tearDown()
     {
         parent::tearDown();
 
-        $this->auth->logout();
+        $this->authorization->logout();
+        $this->aclBuilder->resetRuntimeAcl();
     }
 
     /**
@@ -75,24 +74,24 @@ class PageRepositoryTest extends TestCase
      */
     public function testSaveDesign()
     {
-        $pages = $this->repo->getList(
+        $pages = $this->repository->getList(
             $this->criteriaBuilder->addFilter('identifier', 'page_design_blank')->create()
         )->getItems();
         $page = array_pop($pages);
-        $this->auth->login(TestBootstrap::ADMIN_NAME, TestBootstrap::ADMIN_PASSWORD);
+        $this->authorization->login(TestBootstrap::ADMIN_NAME, TestBootstrap::ADMIN_PASSWORD);
 
         //Admin doesn't have access to page's design.
         $this->aclBuilder->getAcl()->deny(null, 'Magento_Cms::save_design');
 
         $page->setCustomTheme('test');
-        $page = $this->repo->save($page);
+        $page = $this->repository->save($page);
         $this->assertNotEquals('test', $page->getCustomTheme());
 
         //Admin has access to page' design.
         $this->aclBuilder->getAcl()->allow(null, ['Magento_Cms::save', 'Magento_Cms::save_design']);
 
         $page->setCustomTheme('test');
-        $page = $this->repo->save($page);
+        $page = $this->repository->save($page);
         $this->assertEquals('test', $page->getCustomTheme());
     }
 }

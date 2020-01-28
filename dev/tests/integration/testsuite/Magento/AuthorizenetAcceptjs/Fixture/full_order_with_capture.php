@@ -6,7 +6,6 @@
 
 declare(strict_types=1);
 
-use Magento\AuthorizenetAcceptjs\Gateway\Config;
 use Magento\Sales\Model\Order\Payment;
 use Magento\Sales\Model\OrderRepository;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -14,16 +13,13 @@ use Magento\Sales\Api\TransactionRepositoryInterface;
 use Magento\Sales\Model\Order\Payment\Transaction;
 use Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface as TransactionBuilder;
 
-$order = include __DIR__ . '/../_files/full_order.php';
+require __DIR__ . '/../_files/full_order.php';
 
 $objectManager = Bootstrap::getObjectManager();
 
 /** @var Payment $payment */
-$payment = $order->getPayment();
-$payment->setMethod(Config::METHOD);
 $payment->setAuthorizationTransaction(false);
 $payment->setParentTransactionId(4321);
-
 
 /** @var OrderRepository $orderRepo */
 $orderRepo = $objectManager->get(OrderRepository::class);

@@ -18,7 +18,7 @@ use Magento\Framework\Message\MessageInterface;
 use Magento\Captcha\Helper\Data as CaptchaHelper;
 
 /**
- * Class CustomerSendmailTest.
+ * Class CustomerSendmailTest
  */
 class CustomerSendmailTest extends AbstractController
 {
@@ -114,9 +114,6 @@ class CustomerSendmailTest extends AbstractController
                         'message' => 'example message'
                     ],
                     'id' => 1,
-                    'captcha' => [
-                        'product_sendtofriend_form' => 'test'
-                    ],
                     'recipients' => [
                         'name' => ['John'],
                         'email' => ['example1@gmail.com']

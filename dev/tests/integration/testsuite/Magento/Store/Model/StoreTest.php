@@ -15,7 +15,6 @@ use Zend\Stdlib\Parameters;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * phpcs:disable Magento2.Security.Superglobal
  */
 class StoreTest extends \PHPUnit\Framework\TestCase
 {
@@ -213,10 +212,6 @@ class StoreTest extends \PHPUnit\Framework\TestCase
 
         // emulate custom entry point
         $_SERVER['SCRIPT_FILENAME'] = 'custom_entry.php';
-        $request = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
-            ->get(\Magento\Framework\App\RequestInterface::class);
-        $request->setServer(new Parameters($_SERVER));
-
         if ($useCustomEntryPoint) {
             $property = new \ReflectionProperty($this->model, '_isCustomEntryPoint');
             $property->setAccessible(true);
@@ -283,7 +278,7 @@ class StoreTest extends \PHPUnit\Framework\TestCase
     {
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $objectManager->get(\Magento\Framework\App\Config\MutableScopeConfigInterface::class)
-        ->setValue('web/url/use_store', true, ScopeInterface::SCOPE_STORE, 'secondstore');
+            ->setValue('web/url/use_store', true, ScopeInterface::SCOPE_STORE, 'secondstore');
 
         $this->model->load('admin');
         $this->model
@@ -302,11 +297,11 @@ class StoreTest extends \PHPUnit\Framework\TestCase
         $url = $product->getUrlInStore();
 
         $this->assertEquals(
-            $secondStore->getBaseUrl() . 'catalog/product/view/id/1/s/simple-product/',
+            $secondStore->getBaseUrl().'catalog/product/view/id/1/s/simple-product/',
             $url
         );
         $this->assertEquals(
-            $secondStore->getBaseUrl() . '?___from_store=default',
+            $secondStore->getBaseUrl().'?___from_store=default',
             $secondStore->getCurrentUrl()
         );
         $this->assertEquals(
@@ -341,20 +336,20 @@ class StoreTest extends \PHPUnit\Framework\TestCase
         $category = $categoryRepository->get(333, $secondStore->getStoreId());
 
         $this->assertEquals(
-            $secondStore->getBaseUrl() . 'catalog/category/view/s/category-1/id/333/',
+            $secondStore->getBaseUrl().'catalog/category/view/s/category-1/id/333/',
             $category->getUrl()
         );
         $this->assertEquals(
-            $secondStore->getBaseUrl() .
+            $secondStore->getBaseUrl().
             'catalog/product/view/id/333/s/simple-product-three/?___store=fixture_second_store',
             $url
         );
         $this->assertEquals(
-            $secondStore->getBaseUrl() . '?___store=fixture_second_store&___from_store=default',
+            $secondStore->getBaseUrl().'?___store=fixture_second_store&___from_store=default',
             $secondStore->getCurrentUrl()
         );
         $this->assertEquals(
-            $secondStore->getBaseUrl() . '?___store=fixture_second_store',
+            $secondStore->getBaseUrl().'?___store=fixture_second_store',
             $secondStore->getCurrentUrl(false)
         );
     }
@@ -409,7 +404,7 @@ class StoreTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function saveValidationDataProvider()
+    public static function saveValidationDataProvider()
     {
         return [
             'empty store name' => [['name' => '']],

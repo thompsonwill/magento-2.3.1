@@ -3,20 +3,28 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+
 namespace Magento\Newsletter\Model;
 
-use Magento\TestFramework\Mail\Template\TransportBuilderMock;
-
+/**
+ * \Magento\Newsletter\Model\Subscriber tests
+ */
 class SubscriberTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * @var \Magento\TestFramework\ObjectManager
+     */
+    private $objectManager;
+
+    /**
      * @var Subscriber
      */
-    private $model;
+    protected $_model;
 
     protected function setUp()
     {
-        $this->model = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
+        $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
+        $this->_model = $this->objectManager->create(
             \Magento\Newsletter\Model\Subscriber::class
         );
     }
@@ -27,17 +35,16 @@ class SubscriberTest extends \PHPUnit\Framework\TestCase
      */
     public function testEmailConfirmation()
     {
-        $this->model->subscribe('customer_confirm@example.com');
-        /** @var TransportBuilderMock $transportBuilder */
-        $transportBuilder = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
+        $this->_model->subscribe('customer_confirm@example.com');
+        $transportBuilder = $this->objectManager
             ->get(\Magento\TestFramework\Mail\Template\TransportBuilderMock::class);
         // confirmationCode 'ysayquyajua23iq29gxwu2eax2qb6gvy' is taken from fixture
         $this->assertContains(
-            '/newsletter/subscriber/confirm/id/' . $this->model->getSubscriberId()
+            '/newsletter/subscriber/confirm/id/' . $this->_model->getSubscriberId()
             . '/code/ysayquyajua23iq29gxwu2eax2qb6gvy',
-            $transportBuilder->getSentMessage()->getRawMessage()
+            $transportBuilder->getSentMessage()->getBody()->getParts()[0]->getRawContent()
         );
-        $this->assertEquals(Subscriber::STATUS_NOT_ACTIVE, $this->model->getSubscriberStatus());
+        $this->assertEquals(Subscriber::STATUS_NOT_ACTIVE, $this->_model->getSubscriberStatus());
     }
 
     /**
@@ -45,8 +52,8 @@ class SubscriberTest extends \PHPUnit\Framework\TestCase
      */
     public function testLoadByCustomerId()
     {
-        $this->assertSame($this->model, $this->model->loadByCustomerId(1));
-        $this->assertEquals('customer@example.com', $this->model->getSubscriberEmail());
+        $this->assertSame($this->_model, $this->_model->loadByCustomerId(1));
+        $this->assertEquals('customer@example.com', $this->_model->getSubscriberEmail());
     }
 
     /**
@@ -56,13 +63,13 @@ class SubscriberTest extends \PHPUnit\Framework\TestCase
     public function testUnsubscribeSubscribe()
     {
         // Unsubscribe and verify
-        $this->assertSame($this->model, $this->model->loadByCustomerId(1));
-        $this->assertEquals($this->model, $this->model->unsubscribe());
-        $this->assertEquals(Subscriber::STATUS_UNSUBSCRIBED, $this->model->getSubscriberStatus());
+        $this->assertSame($this->_model, $this->_model->loadByCustomerId(1));
+        $this->assertEquals($this->_model, $this->_model->unsubscribe());
+        $this->assertEquals(Subscriber::STATUS_UNSUBSCRIBED, $this->_model->getSubscriberStatus());
 
         // Subscribe and verify
-        $this->assertEquals(Subscriber::STATUS_SUBSCRIBED, $this->model->subscribe('customer@example.com'));
-        $this->assertEquals(Subscriber::STATUS_SUBSCRIBED, $this->model->getSubscriberStatus());
+        $this->assertEquals(Subscriber::STATUS_SUBSCRIBED, $this->_model->subscribe('customer@example.com'));
+        $this->assertEquals(Subscriber::STATUS_SUBSCRIBED, $this->_model->getSubscriberStatus());
     }
 
     /**
@@ -72,32 +79,54 @@ class SubscriberTest extends \PHPUnit\Framework\TestCase
     public function testUnsubscribeSubscribeByCustomerId()
     {
         // Unsubscribe and verify
-        $this->assertSame($this->model, $this->model->unsubscribeCustomerById(1));
-        $this->assertEquals(Subscriber::STATUS_UNSUBSCRIBED, $this->model->getSubscriberStatus());
+        $this->assertSame($this->_model, $this->_model->unsubscribeCustomerById(1));
+        $this->assertEquals(Subscriber::STATUS_UNSUBSCRIBED, $this->_model->getSubscriberStatus());
 
         // Subscribe and verify
-        $this->assertSame($this->model, $this->model->subscribeCustomerById(1));
-        $this->assertEquals(Subscriber::STATUS_SUBSCRIBED, $this->model->getSubscriberStatus());
+        $this->assertSame($this->_model, $this->_model->subscribeCustomerById(1));
+        $this->assertEquals(Subscriber::STATUS_SUBSCRIBED, $this->_model->getSubscriberStatus());
     }
 
     /**
-     * @magentoDataFixture Magento/Newsletter/_files/subscribers.php
-     * @magentoConfigFixture current_store newsletter/subscription/confirm 1
+     * @magentoDataFixture Magento/Store/_files/second_store.php
      */
-    public function testConfirm()
+    public function testSubscribeGuestRegisterCustomerWithSameEmailFromDifferentStore()
     {
-        $customerEmail = 'customer_confirm@example.com';
-        $this->model->subscribe($customerEmail);
-        $this->model->loadByEmail($customerEmail);
-        $this->model->confirm($this->model->getSubscriberConfirmCode());
+        /** @var \Magento\Store\Model\Store $store */
+        $store = $this->objectManager->create(\Magento\Store\Model\Store::class);
+        $defaultStoreId = $store->load('default', 'code')->getId();
+        $secondStoreId = $store->load('fixture_second_store', 'code')->getId();
 
-        $transportBuilder = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->get(
-            \Magento\TestFramework\Mail\Template\TransportBuilderMock::class
+        $email = 'test@example.com';
+
+        // Subscribing guest to a newsletter from default store
+        $this->_model->setStoreId($defaultStoreId)
+            ->setCustomerId(0)
+            ->setSubscriberEmail($email)
+            ->setSubscriberStatus(\Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED)
+            ->save();
+
+        // Registering customer with the same email from second store
+        $customer = $this->objectManager->create(
+            \Magento\Customer\Model\Data\Customer::class,
+            [
+                'data' => [
+                    \Magento\Customer\Model\Data\Customer::FIRSTNAME => 'John',
+                    \Magento\Customer\Model\Data\Customer::LASTNAME => 'Doe',
+                    \Magento\Customer\Model\Data\Customer::EMAIL => $email,
+                    \Magento\Customer\Model\Data\Customer::STORE_ID => $secondStoreId,
+                ]
+            ]
         );
 
-        $this->assertContains(
-            'You have been successfully subscribed to our newsletter.',
-            $transportBuilder->getSentMessage()->getRawMessage()
-        );
+        /** @var \Magento\Customer\Api\AccountManagementInterface $accountManagement */
+        $accountManagement = $this->objectManager->get(\Magento\Customer\Api\AccountManagementInterface::class);
+        $customer = $accountManagement->createAccount($customer);
+
+        /** @var \Magento\Newsletter\Model\ResourceModel\Subscriber\Collection $subscribers */
+        $subscribers = $this->_model->getCollection()->addFieldToFilter('subscriber_email', $email);
+
+        $this->assertCount(1, $subscribers->getItems());
+        $this->assertEquals($subscribers->getFirstItem()->getCustomerId(), $customer->getId());
     }
 }

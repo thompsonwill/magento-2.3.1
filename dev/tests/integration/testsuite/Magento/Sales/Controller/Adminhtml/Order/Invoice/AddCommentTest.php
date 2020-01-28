@@ -27,7 +27,7 @@ class AddCommentTest extends AbstractInvoiceControllerTest
     /**
      * @return void
      */
-    public function testSendEmailOnAddInvoiceComment(): void
+    public function testSendEmailOnAddInvoiceComment()
     {
         $comment = 'Test Invoice Comment';
         $order = $this->prepareRequest(
@@ -55,7 +55,7 @@ class AddCommentTest extends AbstractInvoiceControllerTest
         );
 
         $this->assertEquals($message->getSubject(), $subject);
-        $this->assertThat($message->getRawMessage(), $messageConstraint);
+        $this->assertThat($message->getBody()->getParts()[0]->getRawContent(), $messageConstraint);
     }
 
     /**

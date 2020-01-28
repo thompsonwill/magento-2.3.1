@@ -7,28 +7,39 @@
 
 namespace Magento\Catalog\Api;
 
+use Magento\Catalog\Model\ProductFactory;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\Framework\ObjectManagerInterface;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\TestFramework\TestCase\WebapiAbstract;
 
 class ProductCustomOptionRepositoryTest extends WebapiAbstract
 {
     /**
-     * @var \Magento\Framework\ObjectManagerInterface
+     * @var ObjectManagerInterface
      */
     protected $objectManager;
 
     const SERVICE_NAME = 'catalogProductCustomOptionRepositoryV1';
 
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
+     * @var ProductFactory
      */
     protected $productFactory;
 
+    /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+
+    /**
+     * @inheritdoc
+     */
     protected function setUp()
     {
-        $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
-        $this->productFactory = $this->objectManager->get(\Magento\Catalog\Model\ProductFactory::class);
+        $this->objectManager = Bootstrap::getObjectManager();
+        $this->productFactory = $this->objectManager->get(ProductFactory::class);
+        $this->productRepository = $this->objectManager->create(ProductRepository::class);
     }
 
     /**
@@ -38,12 +49,8 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
     public function testRemove()
     {
         $sku = 'simple';
-        /** @var ProductRepository $productRepository */
-        $productRepository = $this->objectManager->create(
-            \Magento\Catalog\Model\ProductRepository::class
-        );
-        /** @var  \Magento\Catalog\Model\Product $product */
-        $product = $productRepository->get($sku, false, null, true);
+        /** @var \Magento\Catalog\Model\Product $product */
+        $product = $this->productRepository->get($sku, false, null, true);
         $customOptions = $product->getOptions();
         $optionId = array_pop($customOptions)->getId();
         $serviceInfo = [
@@ -58,8 +65,8 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
             ],
         ];
         $this->assertTrue($this->_webApiCall($serviceInfo, ['sku' => $sku, 'optionId' => $optionId]));
-        /** @var  \Magento\Catalog\Model\Product $product */
-        $product = $productRepository->get($sku, false, null, true);
+        /** @var \Magento\Catalog\Model\Product $product */
+        $product = $this->productRepository->get($sku, false, null, true);
         $this->assertNull($product->getOptionById($optionId));
         $this->assertEquals(9, count($product->getOptions()));
     }
@@ -146,10 +153,6 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
     public function testSave($optionData)
     {
         $productSku = 'simple';
-        /** @var \Magento\Catalog\Model\ProductRepository $productRepository */
-        $productRepository = $this->objectManager->create(
-            \Magento\Catalog\Model\ProductRepository::class
-        );
 
         $optionDataPost = $optionData;
         $optionDataPost['product_sku'] = $productSku;
@@ -166,7 +169,7 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
         ];
 
         $result = $this->_webApiCall($serviceInfo, ['option' => $optionDataPost]);
-        $product = $productRepository->get($productSku);
+        $product = $this->productRepository->get($productSku);
         unset($result['product_sku']);
         unset($result['option_id']);
         if (!empty($result['values'])) {
@@ -174,11 +177,10 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
                 unset($result['values'][$key]['option_type_id']);
             }
         }
-
         $this->assertEquals($optionData, $result);
-        $this->assertTrue($product->getHasOptions() == 1);
+        $this->assertEquals(1, $product->getHasOptions());
         if ($optionDataPost['is_require']) {
-            $this->assertTrue($product->getRequiredOptions() == 1);
+            $this->assertEquals(1, $product->getRequiredOptions());
         }
     }
 
@@ -199,8 +201,9 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
      * @magentoApiDataFixture Magento/Catalog/_files/product_without_options.php
      * @magentoAppIsolation enabled
      * @dataProvider optionNegativeDataProvider
+     * @param array $optionData
      */
-    public function testAddNegative($optionData)
+    public function testAddNegative(array $optionData)
     {
         $productSku = 'simple';
         $optionDataPost = $optionData;
@@ -227,7 +230,7 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
             }
         } else {
             $this->expectException('Exception');
-            $this->expectExceptionCode(400);
+            $this->expectExceptionMessage('', 400);
         }
         $this->_webApiCall($serviceInfo, ['option' => $optionDataPost]);
     }
@@ -240,7 +243,7 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
             $fixtureOptions[$key] = [
                 'optionData' => $item,
             ];
-        }
+        };
 
         return $fixtureOptions;
     }
@@ -252,12 +255,7 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
     public function testUpdate()
     {
         $productSku = 'simple';
-        /** @var ProductRepository $productRepository */
-        $productRepository = $this->objectManager->create(
-            \Magento\Catalog\Model\ProductRepository::class
-        );
-
-        $options = $productRepository->get($productSku, true)->getOptions();
+        $options = $this->productRepository->get($productSku, true)->getOptions();
         $option = array_shift($options);
         $optionId = $option->getOptionId();
         $optionDataPost = [
@@ -300,14 +298,13 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
     }
 
     /**
-     * @param string $optionType
-     *
      * @magentoApiDataFixture Magento/Catalog/_files/product_with_options.php
      * @magentoAppIsolation enabled
      * @dataProvider validOptionDataProvider
+     * @param string $optionType
      * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
-    public function testUpdateOptionAddingNewValue($optionType)
+    public function testUpdateOptionAddingNewValue(string $optionType)
     {
         $fixtureOption = null;
         $valueData = [
@@ -318,14 +315,10 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
             'sort_order' => 100,
         ];
 
-        /** @var ProductRepository $productRepository */
-        $productRepository = $this->objectManager->create(
-            \Magento\Catalog\Model\ProductRepository::class
-        );
-        /** @var  \Magento\Catalog\Model\Product $product */
-        $product = $productRepository->get('simple', false, null, true);
+        /** @var \Magento\Catalog\Model\Product $product */
+        $product = $this->productRepository->get('simple', false, null, true);
 
-        /**@var $option \Magento\Catalog\Model\Product\Option */
+        /** @var \Magento\Catalog\Model\Product\Option $option */
         foreach ($product->getOptions() as $option) {
             if ($option->getType() == $optionType) {
                 $fixtureOption = $option;
@@ -369,7 +362,7 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
             $data['option_id'] = $fixtureOption->getId();
             $valueObject = $this->_webApiCall(
                 $serviceInfo,
-                [ 'option_id' => $fixtureOption->getId(), 'option' => $data]
+                ['option_id' => $fixtureOption->getId(), 'option' => $data]
             );
         } else {
             $valueObject = $this->_webApiCall($serviceInfo, ['option' => $data]);
@@ -405,9 +398,7 @@ class ProductCustomOptionRepositoryTest extends WebapiAbstract
     {
         $this->_markTestAsRestOnly();
         $productSku = 'simple';
-        /** @var ProductRepository $productRepository */
-        $productRepository = $this->objectManager->create(ProductRepository::class);
-        $options = $productRepository->get($productSku, true)->getOptions();
+        $options = $this->productRepository->get($productSku, true)->getOptions();
         $option = array_shift($options);
         $optionId = $option->getOptionId();
 

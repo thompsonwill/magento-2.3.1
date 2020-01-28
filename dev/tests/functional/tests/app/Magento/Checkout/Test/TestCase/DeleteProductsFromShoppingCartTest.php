@@ -156,11 +156,6 @@ class DeleteProductsFromShoppingCartTest extends Injectable
         }
     }
 
-    /**
-     * Clean data after running test.
-     *
-     * @return void
-     */
     protected function tearDown()
     {
         $this->envWhitelist->removeHost('example.com');

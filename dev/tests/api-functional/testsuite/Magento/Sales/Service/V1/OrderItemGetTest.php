@@ -79,6 +79,7 @@ class OrderItemGetTest extends WebapiAbstract
     }
 
     /**
+     * @return void
      * @magentoApiDataFixture Magento/Sales/_files/order_with_discount.php
      */
     public function testGetOrderWithDiscount()

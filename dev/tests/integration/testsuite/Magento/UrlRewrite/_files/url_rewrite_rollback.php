@@ -3,7 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
 
 /** @var \Magento\Framework\Registry $registry */
 $registry = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->get(\Magento\Framework\Registry::class);
@@ -21,7 +20,6 @@ $urlRewriteCollection = \Magento\TestFramework\Helper\Bootstrap::getObjectManage
 $collection = $urlRewriteCollection
     ->addFieldToFilter('entity_type', 'custom')
     ->addFieldToFilter('request_path', ['page-a', 'page-b', 'page-c'])
-    ->addFieldToFilter('entity_id', '333')
     ->load()
     ->walk('delete');
 

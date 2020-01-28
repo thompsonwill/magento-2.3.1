@@ -25,7 +25,7 @@ class PageCacheStateTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp(): void
+    protected function setUp()
     {
         $objectManager = Bootstrap::getObjectManager();
         $this->pageCacheStateStorage = $objectManager->get(PageCacheState::class);
@@ -38,7 +38,7 @@ class PageCacheStateTest extends TestCase
      * @return void
      * @dataProvider saveStateProvider
      */
-    public function testSave(bool $state): void
+    public function testSave(bool $state)
     {
         $this->pageCacheStateStorage->save($state);
         $this->assertEquals($state, $this->pageCacheStateStorage->isEnabled());
@@ -49,7 +49,7 @@ class PageCacheStateTest extends TestCase
      *
      * @return void
      */
-    public function testFlush(): void
+    public function testFlush()
     {
         $this->pageCacheStateStorage->save(true);
         $this->assertTrue($this->pageCacheStateStorage->isEnabled());

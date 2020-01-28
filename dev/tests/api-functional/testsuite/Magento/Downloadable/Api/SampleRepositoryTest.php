@@ -3,7 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-
 namespace Magento\Downloadable\Api;
 
 use Magento\Catalog\Model\Product;
@@ -134,7 +133,6 @@ class SampleRepositoryTest extends WebapiAbstract
                 'title' => 'Title',
                 'sort_order' => 1,
                 'sample_file_content' => [
-                    //phpcs:ignore Magento2.Functions.DiscouragedFunction
                     'file_data' => base64_encode(file_get_contents($this->testImagePath)),
                     'name' => 'image.jpg',
                 ],
@@ -210,7 +208,7 @@ class SampleRepositoryTest extends WebapiAbstract
     /**
      * @magentoApiDataFixture Magento/Downloadable/_files/product_downloadable.php
      * @expectedException \Exception
-     * @expectedExceptionMessage The sample type is invalid. Verify the sample type and try again.
+     * @expectedExceptionMessage Invalid sample type.
      */
     public function testCreateThrowsExceptionIfSampleTypeIsInvalid()
     {
@@ -235,7 +233,7 @@ class SampleRepositoryTest extends WebapiAbstract
      * @expectedExceptionMessage Sample file not found. Please try again.
      * @return void
      */
-    public function testCreateSampleWithMissingFileThrowsException(): void
+    public function testCreateSampleWithMissingFileThrowsException()
     {
         $requestData = [
             'isGlobalScopeContent' => false,
@@ -290,7 +288,6 @@ class SampleRepositoryTest extends WebapiAbstract
                 'sort_order' => 15,
                 'sample_type' => 'file',
                 'sample_file_content' => [
-                    //phpcs:ignore Magento2.Functions.DiscouragedFunction
                     'file_data' => base64_encode(file_get_contents($this->testImagePath)),
                     'name' => 'name/with|forbidden{characters',
                 ],
@@ -355,7 +352,7 @@ class SampleRepositoryTest extends WebapiAbstract
     /**
      * @magentoApiDataFixture Magento/Catalog/_files/product_simple.php
      * @expectedException \Exception
-     * @expectedExceptionMessage The product needs to be the downloadable type. Verify the product and try again.
+     * @expectedExceptionMessage Provided product must be type 'downloadable'.
      */
     public function testCreateThrowsExceptionIfTargetProductTypeIsNotDownloadable()
     {
@@ -375,7 +372,7 @@ class SampleRepositoryTest extends WebapiAbstract
 
     /**
      * @expectedException \Exception
-     * @expectedExceptionMessage The product that was requested doesn't exist. Verify the product and try again.
+     * @expectedExceptionMessage Requested product doesn't exist
      */
     public function testCreateThrowsExceptionIfTargetProductDoesNotExist()
     {
@@ -454,7 +451,7 @@ class SampleRepositoryTest extends WebapiAbstract
 
     /**
      * @expectedException \Exception
-     * @expectedExceptionMessage The product that was requested doesn't exist. Verify the product and try again.
+     * @expectedExceptionMessage Requested product doesn't exist
      */
     public function testUpdateThrowsExceptionIfTargetProductDoesNotExist()
     {
@@ -475,7 +472,7 @@ class SampleRepositoryTest extends WebapiAbstract
     /**
      * @magentoApiDataFixture Magento/Downloadable/_files/product_downloadable_with_files.php
      * @expectedException \Exception
-     * @expectedExceptionMessage No downloadable sample with the provided ID was found. Verify the ID and try again.
+     * @expectedExceptionMessage There is no downloadable sample with provided ID.
      */
     public function testUpdateThrowsExceptionIfThereIsNoDownloadableSampleWithGivenId()
     {
@@ -538,7 +535,7 @@ class SampleRepositoryTest extends WebapiAbstract
 
     /**
      * @expectedException \Exception
-     * @expectedExceptionMessage No downloadable sample with the provided ID was found. Verify the ID and try again.
+     * @expectedExceptionMessage There is no downloadable sample with provided ID.
      */
     public function testDeleteThrowsExceptionIfThereIsNoDownloadableSampleWithGivenId()
     {

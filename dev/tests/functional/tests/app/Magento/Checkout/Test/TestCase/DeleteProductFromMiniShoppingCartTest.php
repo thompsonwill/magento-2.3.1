@@ -146,9 +146,7 @@ class DeleteProductFromMiniShoppingCartTest extends Injectable
     }
 
     /**
-     * Clean data after running test.
-     *
-     * @return void
+     * @inheritDoc
      */
     protected function tearDown()
     {

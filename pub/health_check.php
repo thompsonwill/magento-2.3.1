@@ -4,17 +4,11 @@
  * See COPYING.txt for license details.
  */
 
-/**
- * phpcs:disable PSR1.Files.SideEffects
- * phpcs:disable Squiz.Functions.GlobalFunction
- */
 use Magento\Framework\Config\ConfigOptionsListConstants;
 
-// phpcs:ignore Magento2.Functions.DiscouragedFunction
 register_shutdown_function("fatalErrorHandler");
 
 try {
-    // phpcs:ignore Magento2.Security.IncludeFile
     require __DIR__ . '/../app/bootstrap.php';
     /** @var \Magento\Framework\App\ObjectManagerFactory $objectManagerFactory */
     $objectManagerFactory = \Magento\Framework\App\Bootstrap::createObjectManagerFactory(BP, []);
@@ -26,7 +20,6 @@ try {
     $logger = $objectManager->get(\Psr\Log\LoggerInterface::class);
 } catch (\Exception $e) {
     http_response_code(500);
-    // phpcs:ignore Magento2.Security.LanguageConstruct
     exit(1);
 }
 
@@ -42,7 +35,6 @@ foreach ($deploymentConfig->get(ConfigOptionsListConstants::CONFIG_PATH_DB_CONNE
     } catch (\Exception $e) {
         http_response_code(500);
         $logger->error("MySQL connection failed: " . $e->getMessage());
-        // phpcs:ignore Magento2.Security.LanguageConstruct
         exit(1);
     }
 }
@@ -55,7 +47,6 @@ if ($cacheConfigs) {
             !isset($cacheConfig[ConfigOptionsListConstants::CONFIG_PATH_BACKEND_OPTIONS])) {
             http_response_code(500);
             $logger->error("Cache configuration is invalid");
-            // phpcs:ignore Magento2.Security.LanguageConstruct
             exit(1);
         }
         $cacheBackendClass = $cacheConfig[ConfigOptionsListConstants::CONFIG_PATH_BACKEND];
@@ -66,7 +57,6 @@ if ($cacheConfigs) {
         } catch (\Exception $e) {
             http_response_code(500);
             $logger->error("Cache storage is not accessible");
-            // phpcs:ignore Magento2.Security.LanguageConstruct
             exit(1);
         }
     }
@@ -80,7 +70,7 @@ if ($cacheConfigs) {
 function fatalErrorHandler()
 {
     $error = error_get_last();
-    if ($error !== null && $error['type'] === E_ERROR) {
+    if ($error !== null) {
         http_response_code(500);
     }
 }
